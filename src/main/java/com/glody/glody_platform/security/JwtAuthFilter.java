@@ -42,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (token != null && jwtTokenUtil.validateToken(token)) {
-            String userId = jwtTokenUtil.getUserIdFromToken(token);
+            Long userId = Long.parseLong(jwtTokenUtil.getUserIdFromToken(token));
             User user = userRepository.findById(userId).orElse(null);
 
             if (user != null && Boolean.FALSE.equals(user.getIsDeleted())) {

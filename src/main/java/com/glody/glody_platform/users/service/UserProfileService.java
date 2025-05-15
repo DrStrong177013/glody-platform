@@ -21,6 +21,7 @@ public class UserProfileService {
                 .orElseThrow(() -> new RuntimeException("Profile not found"));
 
         UserProfileDto dto = new UserProfileDto();
+        dto.setFullName(profile.getFullName());
         dto.setNationality(profile.getNationality());
         dto.setEducationLevel(profile.getEducationLevel());
         dto.setMajor(profile.getMajor());
@@ -33,9 +34,13 @@ public class UserProfileService {
 
     @Transactional
     public void saveOrUpdate(Long userId, UserProfileDto dto) {
-        User user = userRepository.findById(userId.toString()).orElseThrow();
-        UserProfile profile = userProfileRepository.findByUserId(userId).orElse(new UserProfile());
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserProfile profile = userProfileRepository.findByUserId(userId)
+                .orElse(new UserProfile());
         profile.setUser(user);
+
+        profile.setFullName(dto.getFullName());
         profile.setNationality(dto.getNationality());
         profile.setEducationLevel(dto.getEducationLevel());
         profile.setMajor(dto.getMajor());
@@ -43,6 +48,7 @@ public class UserProfileService {
         profile.setTargetYear(dto.getTargetYear());
         profile.setGpa(dto.getGpa());
         profile.setLanguageCertificate(dto.getLanguageCertificate());
+
         userProfileRepository.save(profile);
     }
 }

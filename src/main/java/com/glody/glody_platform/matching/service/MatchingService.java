@@ -26,7 +26,7 @@ public class MatchingService {
 
     @Transactional
     public MatchingSessionDto createMatchingSession(Long userId, MatchingSessionDto sessionDto) {
-        User user = userRepository.findById(userId.toString())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         final MatchingSession session = sessionRepo.save(createNewSession(user));

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "user_profiles")
 @Getter
@@ -14,6 +16,10 @@ public class UserProfile extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
+
+    private String fullName;
+
+    private LocalDate dateOfBirth;
 
     private String nationality;
     private String educationLevel;

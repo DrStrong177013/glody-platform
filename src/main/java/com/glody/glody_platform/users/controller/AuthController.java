@@ -3,9 +3,12 @@ package com.glody.glody_platform.users.controller;
 import com.glody.glody_platform.users.dto.AuthRequestDto;
 import com.glody.glody_platform.users.dto.AuthResponseDto;
 import com.glody.glody_platform.users.entity.User;
+import com.glody.glody_platform.users.entity.UserProfile;
 import com.glody.glody_platform.users.repository.UserRepository;
+import com.glody.glody_platform.users.repository.UserProfileRepository;
 import com.glody.glody_platform.security.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Description;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,11 +17,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/login")
+    @Description("..")
+
     public AuthResponseDto login(@RequestBody AuthRequestDto request) {
         User user = userRepository.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -29,6 +35,10 @@ public class AuthController {
 
         String token = jwtTokenUtil.generateToken(String.valueOf(user.getId()), user.getEmail());
 
-        return new AuthResponseDto(token, user.getEmail(), user.getFullName());
+        String fullName = userProfileRepository.findByUserId(user.getId())
+                .map(UserProfile::getFullName)
+                .orElse("Unknown");
+        return new AuthResponseDto(token, user.getEmail(), fullName);
+
     }
 }

@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public String softDeleteUser(@PathVariable String id) {
+    public String softDeleteUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setIsDeleted(true);
@@ -40,7 +40,7 @@ public class UserController {
         return "User soft deleted successfully";
     }
     @PutMapping("/restore/{id}")
-    public String restoreUser(@PathVariable String id) {
+    public String restoreUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (Boolean.TRUE.equals(user.getIsDeleted())) {

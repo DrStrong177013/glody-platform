@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class UserProfileDto {
+    private String fullName;
     private String nationality;
     private String educationLevel;
     private String major;
@@ -11,4 +12,5 @@ public class UserProfileDto {
     private Integer targetYear;
     private Double gpa;
     private String languageCertificate;
+    private String dateOfBirth; // hoặc LocalDate nếu cần
 }

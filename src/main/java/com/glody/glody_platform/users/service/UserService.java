@@ -2,11 +2,9 @@
 package com.glody.glody_platform.users.service;
 
 import com.glody.glody_platform.users.dto.UserDto;
-import com.glody.glody_platform.users.entity.Role;
-import com.glody.glody_platform.users.entity.SubscriptionPackage;
-import com.glody.glody_platform.users.entity.User;
-import com.glody.glody_platform.users.entity.UserSubscription;
+import com.glody.glody_platform.users.entity.*;
 import com.glody.glody_platform.users.repository.RoleRepository;
+import com.glody.glody_platform.users.repository.UserProfileRepository;
 import com.glody.glody_platform.users.repository.SubscriptionPackageRepository;
 import com.glody.glody_platform.users.repository.UserRepository;
 import com.glody.glody_platform.users.repository.UserSubscriptionRepository;
@@ -23,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final UserProfileRepository userProfileRepository;
     private final SubscriptionPackageRepository subscriptionPackageRepository;
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final PasswordEncoder passwordEncoder;
@@ -36,15 +35,20 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Default role not found"));
 
         User user = new User();
-        user.setFullName(userDto.getFullName());
         user.setEmail(userDto.getEmail());
         user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
         user.setPhone(userDto.getPhone());
         user.setAvatarUrl(userDto.getAvatarUrl());
         user.setRoles(Collections.singleton(userRole));
-
         User savedUser = userRepository.save(user);
 
+        // ✅ Create UserProfile
+        UserProfile profile = new UserProfile();
+        profile.setUser(savedUser);
+        profile.setFullName(userDto.getFullName());
+        userProfileRepository.save(profile);
+
+        // ✅ Gán gói FREE mặc định
         SubscriptionPackage freePackage = subscriptionPackageRepository.findByName("FREE")
                 .orElseThrow(() -> new RuntimeException("Default FREE package not found"));
 
@@ -54,9 +58,9 @@ public class UserService {
         subscription.setStartDate(LocalDate.now());
         subscription.setEndDate(LocalDate.now().plusDays(freePackage.getDurationDays()));
         subscription.setIsActive(true);
-
         userSubscriptionRepository.save(subscription);
 
         return savedUser;
     }
+
 }

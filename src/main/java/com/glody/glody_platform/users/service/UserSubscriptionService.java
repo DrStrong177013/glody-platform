@@ -37,7 +37,7 @@ public class UserSubscriptionService {
 
     @Transactional
     public void createSubscription(Long userId, UserSubscriptionDto dto) {
-        User user = userRepository.findById(userId.toString()).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow();
         SubscriptionPackage pack = subscriptionPackageRepository.findById(dto.getPackageId()).orElseThrow();
 
         autoExpireSubscriptions(userId);
@@ -80,7 +80,7 @@ private void autoExpireSubscriptions(Long userId) {
 
     if (!hasActive) {
         subscriptionPackageRepository.findByName("FREE").ifPresent(free -> {
-            User user = userRepository.findById(userId.toString()).orElseThrow();
+            User user = userRepository.findById(userId).orElseThrow();
             UserSubscription freeSub = new UserSubscription();
             freeSub.setUser(user);
             freeSub.setSubscriptionPackage(free);
