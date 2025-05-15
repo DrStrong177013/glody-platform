@@ -1,0 +1,14 @@
+package com.glody.glody_platform.users.dto;
+
+import lombok.Data;
+
+@Data
+public class UserProfileDto {
+    private String nationality;
+    private String educationLevel;
+    private String major;
+    private String targetCountry;
+    private Integer targetYear;
+    private Double gpa;
+    private String languageCertificate;
+}
