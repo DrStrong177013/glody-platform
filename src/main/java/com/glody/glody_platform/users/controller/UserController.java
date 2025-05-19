@@ -24,12 +24,6 @@ public class UserController {
                 .filter(user -> !Boolean.TRUE.equals(user.getIsDeleted()))
                 .toList();
     }
-    @GetMapping("/v2")
-    public List<User> getAllUsers2() {
-        return userRepository.findAll().stream()
-                .filter(user -> !Boolean.TRUE.equals(user.getIsDeleted()))
-                .toList();
-    }
 
     @PostMapping("/register")
     public User register(@RequestBody UserDto userDto) {
