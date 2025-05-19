@@ -31,8 +31,8 @@ jobs:
             with:
               context: .
               push: true
-              tags: huyhoang204205/glody:latest
-              cache-from: type=registry,ref=huyhoang204205/glody:latest
+              tags: raytran177013/glody:latest
+              cache-from: type=registry,ref=raytran177013/glody:latest
               cache-to: type=inline
 
     deploy:
