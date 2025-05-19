@@ -1,8 +1,12 @@
 package com.glody.glody_platform.matching.controller;
 
-import com.glody.glody_platform.matching.dto.*;
+import com.glody.glody_platform.matching.dto.MatchingResultDto;
+import com.glody.glody_platform.matching.dto.MatchingStatusUpdateRequest;
+import com.glody.glody_platform.matching.entity.MatchingStatus;
+import com.glody.glody_platform.matching.entity.MatchingStatusLog;
 import com.glody.glody_platform.matching.service.MatchingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,33 +18,30 @@ public class MatchingController {
 
     private final MatchingService matchingService;
 
-    @PostMapping("/session")
-    public MatchingSessionDto createSession(@RequestParam Long userId, @RequestBody MatchingSessionDto sessionDto) {
-        return matchingService.createMatchingSession(userId, sessionDto);
+    @PostMapping("/start")
+    public List<MatchingResultDto> startMatching(@RequestParam Long userId) {
+        return matchingService.matchForUser(userId);
     }
 
-    @GetMapping("/sessions")
-    public List<MatchingSessionDto> getUserSessions(@RequestParam Long userId) {
-        return matchingService.getUserSessions(userId);
-    }
-
-    @GetMapping("/results")
-    public List<MatchingResultDto> getResults(@RequestParam Long sessionId) {
-        return matchingService.getResultsBySession(sessionId);
-    }
-
-    @GetMapping("/scores")
-    public List<MatchingScoreDto> getScores(@RequestParam Long resultId) {
-        return matchingService.getScoresByResult(resultId);
+    @PostMapping("/status/update")
+    public ResponseEntity<String> updateStatus(@RequestBody MatchingStatusUpdateRequest request) {
+        matchingService.updateStatus(request);
+        return ResponseEntity.ok("Status updated and log saved");
     }
 
     @GetMapping("/status")
-    public MatchingStatusLogDto getStatus(@RequestParam Long resultId) {
-        return matchingService.getStatusLog(resultId);
+    public MatchingStatus getCurrentStatus(
+            @RequestParam Long userId,
+            @RequestParam Long resultId
+    ) {
+        return matchingService.getCurrentStatus(userId, resultId);
     }
 
-    @PostMapping("/status")
-    public void updateStatus(@RequestParam Long resultId, @RequestParam String status) {
-        matchingService.updateStatus(resultId, status);
+    @GetMapping("/status/log")
+    public List<MatchingStatusLog> getLogs(
+            @RequestParam Long userId,
+            @RequestParam Long resultId
+    ) {
+        return matchingService.getStatusLogs(userId, resultId);
     }
 }

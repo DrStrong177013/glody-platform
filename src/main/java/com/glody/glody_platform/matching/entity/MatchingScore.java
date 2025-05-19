@@ -6,15 +6,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Table(name = "matching_scores")
 @Getter
 @Setter
 public class MatchingScore extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "result_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "result_id", nullable = false)
     private MatchingResult result;
 
-    private String criteria;
+    private String criterion; // GPA, MAJOR, COUNTRY, etc.
+
     private Double score;
-    private String reason;
 }

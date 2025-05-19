@@ -1,138 +1,158 @@
 package com.glody.glody_platform.matching.service;
 
-import com.glody.glody_platform.matching.dto.*;
+import com.glody.glody_platform.catalog.entity.Program;
+import com.glody.glody_platform.catalog.entity.Scholarship;
+import com.glody.glody_platform.catalog.entity.University;
+import com.glody.glody_platform.catalog.repository.ProgramRepository;
+import com.glody.glody_platform.catalog.repository.ScholarshipRepository;
+import com.glody.glody_platform.catalog.repository.UniversityRepository;
+import com.glody.glody_platform.matching.dto.MatchingResultDto;
+import com.glody.glody_platform.matching.dto.MatchingStatusUpdateRequest;
 import com.glody.glody_platform.matching.entity.*;
 import com.glody.glody_platform.matching.repository.*;
 import com.glody.glody_platform.users.entity.User;
+import com.glody.glody_platform.users.entity.UserProfile;
+import com.glody.glody_platform.users.repository.UserProfileRepository;
 import com.glody.glody_platform.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MatchingService {
 
-    private final MatchingSessionRepository sessionRepo;
-    private final MatchingResultRepository resultRepo;
-    private final MatchingScoreRepository scoreRepo;
-    private final MatchingStatusLogRepository statusLogRepo;
     private final UserRepository userRepository;
+    private final UserProfileRepository profileRepository;
+    private final UniversityRepository universityRepository;
+    private final ProgramRepository programRepository;
+    private final ScholarshipRepository scholarshipRepository;
+    private final MatchingSessionRepository sessionRepository;
+    private final MatchingResultRepository resultRepository;
+    private final MatchingScoreRepository scoreRepository;
+    private final MatchingStatusRepository statusRepository;
+    private final MatchingStatusLogRepository statusLogRepository;
 
     @Transactional
-    public MatchingSessionDto createMatchingSession(Long userId, MatchingSessionDto sessionDto) {
+    public List<MatchingResultDto> matchForUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        final MatchingSession session = sessionRepo.save(createNewSession(user));
+        UserProfile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User profile not found"));
 
-        List<MatchingResult> results = sessionDto.getResults().stream().map(dto -> {
-            MatchingResult result = new MatchingResult();
-            result.setSession(session);
-            result.setScholarshipId(dto.getScholarshipId());
-            result.setType(dto.getType());
-            result.setTotalScore(dto.getTotalScore());
-            final MatchingResult savedResult = resultRepo.save(result);
-
-            if (dto.getScores() != null) {
-                List<MatchingScore> scores = dto.getScores().stream().map(s -> {
-                    MatchingScore score = new MatchingScore();
-                    score.setResult(savedResult);
-                    score.setCriteria(s.getCriteria());
-                    score.setScore(s.getScore());
-                    score.setReason(s.getReason());
-                    return score;
-                }).collect(Collectors.toList());
-                scoreRepo.saveAll(scores);
-            }
-
-            if (dto.getStatusLog() != null) {
-                MatchingStatusLog log = new MatchingStatusLog();
-                log.setResult(savedResult);
-                log.setStatus(dto.getStatusLog().getStatus());
-                log.setUpdatedAt(LocalDateTime.now());
-                statusLogRepo.save(log);
-            }
-            return savedResult;
-        }).toList();
-
-        return getSessionDto(session);
-    }
-
-    private MatchingSession createNewSession(User user) {
         MatchingSession session = new MatchingSession();
         session.setUser(user);
-        session.setCreatedAt(LocalDateTime.now());
-        return session;
+        session.setStatus("COMPLETED");
+        sessionRepository.save(session);
+
+        List<University> universities = universityRepository.findByIsDeletedFalse();
+        List<Program> programs = programRepository.findByIsDeletedFalse();
+        List<Scholarship> scholarships = scholarshipRepository.findByIsDeletedFalseAndMinGpaLessThanEqual(profile.getGpa());
+
+        List<MatchingResultDto> resultDtos = new ArrayList<>();
+
+        for (University university : universities) {
+            if (!university.getCountry().getName().equalsIgnoreCase(profile.getTargetCountry())) continue;
+
+            List<Program> matchedPrograms = programs.stream()
+                    .filter(p -> Objects.equals(p.getUniversity().getId(), university.getId()))
+                    .filter(p -> matchMajor(p.getMajor(), profile.getMajor()))
+                    .collect(Collectors.toList());
+
+            for (Program program : matchedPrograms) {
+                Optional<Scholarship> matchedScholarship = scholarships.stream()
+                        .filter(s -> matchMajor(s.getApplicableMajors(), program.getMajor()))
+                        .findFirst();
+
+                MatchingResult result = new MatchingResult();
+                result.setSession(session);
+                result.setUniversity(university);
+                result.setProgram(program);
+                result.setScholarship(matchedScholarship.orElse(null));
+                resultRepository.save(result);
+
+                scoreRepository.save(score(result, "GPA", gpaScore(profile.getGpa(), matchedScholarship)));
+                scoreRepository.save(score(result, "MAJOR", 100.0));
+                scoreRepository.save(score(result, "COUNTRY", 100.0));
+
+                MatchingResultDto dto = new MatchingResultDto();
+                dto.setUniversityId(university.getId());
+                dto.setUniversityName(university.getName());
+                dto.setUniversityCountry(university.getCountry().getName());
+                dto.setProgramId(program.getId());
+                dto.setProgramName(program.getName());
+                dto.setProgramMajor(program.getMajor());
+                dto.setProgramDegreeType(program.getDegreeType());
+
+                matchedScholarship.ifPresent(sch -> {
+                    dto.setScholarshipId(sch.getId());
+                    dto.setScholarshipName(sch.getName());
+                });
+
+                dto.setGpaScore(gpaScore(profile.getGpa(), matchedScholarship));
+                dto.setMajorScore(100.0);
+                dto.setCountryScore(100.0);
+
+                resultDtos.add(dto);
+            }
+        }
+
+        return resultDtos;
     }
 
-    public List<MatchingSessionDto> getUserSessions(Long userId) {
-        return sessionRepo.findByUserId(userId).stream()
-                .map(this::getSessionDto)
-                .collect(Collectors.toList());
+    private MatchingScore score(MatchingResult result, String criterion, Double value) {
+        MatchingScore s = new MatchingScore();
+        s.setResult(result);
+        s.setCriterion(criterion);
+        s.setScore(value);
+        return s;
     }
 
-    public List<MatchingResultDto> getResultsBySession(Long sessionId) {
-        return resultRepo.findBySessionId(sessionId).stream()
-                .map(this::getResultDto)
-                .collect(Collectors.toList());
+    private boolean matchMajor(String a, String b) {
+        if (a == null || b == null) return false;
+        return a.toLowerCase().contains(b.toLowerCase()) || b.toLowerCase().contains(a.toLowerCase());
     }
 
-    public List<MatchingScoreDto> getScoresByResult(Long resultId) {
-        return scoreRepo.findByResultId(resultId).stream().map(s -> {
-            MatchingScoreDto dto = new MatchingScoreDto();
-            dto.setCriteria(s.getCriteria());
-            dto.setScore(s.getScore());
-            dto.setReason(s.getReason());
-            return dto;
-        }).collect(Collectors.toList());
+    private double gpaScore(Double userGpa, Optional<Scholarship> sch) {
+        return sch.map(s -> {
+            double base = s.getMinGpa() != null ? s.getMinGpa() : 0;
+            return Math.min(100.0, (userGpa - base) * 25);
+        }).orElse(0.0);
     }
 
-    public MatchingStatusLogDto getStatusLog(Long resultId) {
-        Optional<MatchingStatusLog> log = statusLogRepo.findByResultId(resultId);
-        return log.map(l -> {
-            MatchingStatusLogDto dto = new MatchingStatusLogDto();
-            dto.setStatus(l.getStatus());
-            dto.setUpdatedAt(l.getUpdatedAt());
-            return dto;
-        }).orElse(null);
-    }
+    public void updateStatus(MatchingStatusUpdateRequest request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        MatchingResult result = resultRepository.findById(request.getResultId())
+                .orElseThrow(() -> new RuntimeException("Matching result not found"));
 
-    @Transactional
-    public void updateStatus(Long resultId, String status) {
-        MatchingStatusLog log = statusLogRepo.findByResultId(resultId).orElse(new MatchingStatusLog());
-        MatchingResult result = resultRepo.findById(resultId)
-                .orElseThrow(() -> new RuntimeException("Result not found"));
+        MatchingStatus status = statusRepository.findByUserAndResult(user, result)
+                .orElse(new MatchingStatus());
+        status.setUser(user);
+        status.setResult(result);
+        status.setStatus(request.getStatus());
+        statusRepository.save(status);
 
+        MatchingStatusLog log = new MatchingStatusLog();
+        log.setUser(user);
         log.setResult(result);
-        log.setStatus(status);
-        log.setUpdatedAt(LocalDateTime.now());
-        statusLogRepo.save(log);
+        log.setAction(request.getStatus());
+        statusLogRepository.save(log);
     }
 
-    private MatchingSessionDto getSessionDto(MatchingSession session) {
-        MatchingSessionDto dto = new MatchingSessionDto();
-        dto.setId(session.getId());
-        dto.setUserId(session.getUser().getId());
-        dto.setCreatedAt(session.getCreatedAt());
-        dto.setResults(getResultsBySession(session.getId()));
-        return dto;
+    public MatchingStatus getCurrentStatus(Long userId, Long resultId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        MatchingResult result = resultRepository.findById(resultId).orElseThrow();
+        return statusRepository.findByUserAndResult(user, result).orElse(null);
     }
 
-    private MatchingResultDto getResultDto(MatchingResult result) {
-        MatchingResultDto dto = new MatchingResultDto();
-        dto.setId(result.getId());
-        dto.setSessionId(result.getSession().getId());
-        dto.setScholarshipId(result.getScholarshipId());
-        dto.setType(result.getType());
-        dto.setTotalScore(result.getTotalScore());
-        dto.setScores(getScoresByResult(result.getId()));
-        dto.setStatusLog(getStatusLog(result.getId()));
-        return dto;
+    public List<MatchingStatusLog> getStatusLogs(Long userId, Long resultId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        MatchingResult result = resultRepository.findById(resultId).orElseThrow();
+        return statusLogRepository.findAllByUserAndResultOrderByCreatedAtDesc(user, result);
     }
 }

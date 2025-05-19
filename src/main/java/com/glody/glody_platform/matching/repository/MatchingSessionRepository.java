@@ -1,10 +1,11 @@
 package com.glody.glody_platform.matching.repository;
 
 import com.glody.glody_platform.matching.entity.MatchingSession;
+import com.glody.glody_platform.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface MatchingSessionRepository extends JpaRepository<MatchingSession, Long> {
-    List<MatchingSession> findByUserId(Long userId);
+    List<MatchingSession> findByUser(User user);
 }

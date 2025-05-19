@@ -7,14 +7,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "matching_sessions")
+@Table(name = "matching_statuses")
 @Getter
 @Setter
-public class MatchingSession extends BaseEntity {
+public class MatchingStatus extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String status; // e.g. RUNNING, COMPLETED
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "result_id", nullable = false)
+    private MatchingResult result;
+
+    private String status; // VIEWED, SELECTED, SKIPPED
 }
