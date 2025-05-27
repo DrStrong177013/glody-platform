@@ -1,7 +1,5 @@
 package com.glody.glody_platform.catalog.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -10,16 +8,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ScholarshipRequestDto {
-
-    @NotBlank(message = "Name is required")
+public class ScholarshipResponseDto {
+    private Long id;
     private String name;
-
     private String description;
-
     private Double minGpa;
-
     private String applicableMajors;
-
-    private List<Long> programIds; // List chương trình áp dụng học bổng
+    private List<Long> programIds;
 }

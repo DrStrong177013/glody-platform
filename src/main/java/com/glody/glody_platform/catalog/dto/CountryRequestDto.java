@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class CountryRequestDto {
     private String name;
+    private String code;
 }

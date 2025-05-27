@@ -1,8 +1,10 @@
 package com.glody.glody_platform.catalog.controller;
 
 import com.glody.glody_platform.catalog.dto.ScholarshipRequirementRequestDto;
+import com.glody.glody_platform.catalog.dto.ScholarshipRequirementResponseDto;
 import com.glody.glody_platform.catalog.entity.ScholarshipRequirement;
 import com.glody.glody_platform.catalog.service.ScholarshipRequirementService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,26 +16,39 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScholarshipRequirementController {
 
-    private final ScholarshipRequirementService service;
+    private final ScholarshipRequirementService scholarshipRequirementService;
 
-    @GetMapping("/{scholarshipId}")
-    public List<ScholarshipRequirement> getByScholarship(@PathVariable Long scholarshipId) {
-        return service.getByScholarship(scholarshipId);
+    @GetMapping
+    public ResponseEntity<List<ScholarshipRequirementResponseDto>> getAllOrByScholarship(
+            @RequestParam(required = false) Long scholarshipId) {
+        List<ScholarshipRequirementResponseDto> result;
+
+        if (scholarshipId != null) {
+            result = scholarshipRequirementService.getByScholarship(scholarshipId);
+        } else {
+            result = scholarshipRequirementService.getAll();
+        }
+
+        return ResponseEntity.ok(result);
     }
 
+
+
     @PostMapping
-    public ScholarshipRequirement create(@RequestBody ScholarshipRequirementRequestDto dto) {
-        return service.create(dto);
+    public ResponseEntity<ScholarshipRequirementResponseDto> create(@RequestBody @Valid ScholarshipRequirementRequestDto dto) {
+        return ResponseEntity.ok(scholarshipRequirementService.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ScholarshipRequirement update(@PathVariable Long id, @RequestBody ScholarshipRequirementRequestDto dto) {
-        return service.update(id, dto);
+    public ResponseEntity<ScholarshipRequirementResponseDto> update(
+            @PathVariable Long id,
+            @RequestBody @Valid ScholarshipRequirementRequestDto dto) {
+        return ResponseEntity.ok(scholarshipRequirementService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        service.softDelete(id);
-        return ResponseEntity.ok("Requirement soft deleted");
+        scholarshipRequirementService.softDelete(id);
+        return ResponseEntity.ok("Requirement soft deleted successfully");
     }
 }

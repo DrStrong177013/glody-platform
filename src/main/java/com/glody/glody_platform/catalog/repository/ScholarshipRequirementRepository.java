@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ScholarshipRequirementRepository extends JpaRepository<ScholarshipRequirement, Long> {
     List<ScholarshipRequirement> findByScholarshipIdAndIsDeletedFalse(Long scholarshipId);
+    List<ScholarshipRequirement> findByIsDeletedFalse();
 }

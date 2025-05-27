@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "programs")
 @Getter
@@ -19,7 +22,12 @@ public class Program extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private String major; // 🎯 dùng cho matching theo ngành học
+    private String major; // 🎯 matching AI theo ngành học
 
     private String degreeType; // BSc, MSc, MBA...
+
+    // OPTIONAL nếu muốn map học bổng cho từng chương trình
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
+    private List<ProgramScholarship> programScholarships = new ArrayList<>();
 }
+

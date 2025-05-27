@@ -1,9 +1,10 @@
-// SubscriptionPackageController.java
 package com.glody.glody_platform.users.controller;
 
+import com.glody.glody_platform.common.PageResponse;
 import com.glody.glody_platform.users.entity.SubscriptionPackage;
 import com.glody.glody_platform.users.repository.SubscriptionPackageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +17,45 @@ public class SubscriptionPackageController {
 
     private final SubscriptionPackageRepository subscriptionPackageRepository;
 
+    // ✅ GET with optional paging + sorting
     @GetMapping
-    public List<SubscriptionPackage> getAll() {
-        return subscriptionPackageRepository.findAll();
+    public ResponseEntity<?> getAll(
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        if (size != null) {
+            int pageNumber = (page != null) ? page : 0;
+            Pageable pageable = PageRequest.of(pageNumber, size, sort);
+            Page<SubscriptionPackage> pageResult = subscriptionPackageRepository.findAll(pageable);
+
+            PageResponse.PageInfo pageInfo = new PageResponse.PageInfo(
+                    pageResult.getNumber(),
+                    pageResult.getSize(),
+                    pageResult.getTotalPages(),
+                    pageResult.getTotalElements(),
+                    pageResult.hasNext(),
+                    pageResult.hasPrevious()
+            );
+
+            return ResponseEntity.ok(new PageResponse<>(pageResult.getContent(), pageInfo));
+        }
+
+        List<SubscriptionPackage> all = subscriptionPackageRepository.findAll(sort);
+        PageResponse.PageInfo pageInfo = new PageResponse.PageInfo(
+                0,
+                all.size(),
+                1,
+                all.size(),
+                false,
+                false
+        );
+        return ResponseEntity.ok(new PageResponse<>(all, pageInfo));
     }
 
     @GetMapping("/{id}")

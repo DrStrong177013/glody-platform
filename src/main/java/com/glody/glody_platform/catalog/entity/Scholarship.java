@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "scholarships")
 @Getter
@@ -17,7 +20,15 @@ public class Scholarship extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private Double minGpa; // 🎯 dùng cho AI match GPA
+    private Double minGpa;
 
-    private String applicableMajors; // 🎯 ngành học phù hợp (có thể lưu dạng chuỗi JSON / CSV)
+    @Column(columnDefinition = "TEXT")
+    private String applicableMajors; // 🎯 CSV hoặc JSON string
+
+    @OneToMany(mappedBy = "scholarship", cascade = CascadeType.ALL)
+    private List<ScholarshipRequirement> requirements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "scholarship", cascade = CascadeType.ALL)
+    private List<ProgramScholarship> programScholarships = new ArrayList<>();
 }
+
