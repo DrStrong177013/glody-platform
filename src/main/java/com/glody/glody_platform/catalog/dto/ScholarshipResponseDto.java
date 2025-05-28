@@ -14,5 +14,5 @@ public class ScholarshipResponseDto {
     private String description;
     private Double minGpa;
     private String applicableMajors;
-    private List<Long> programIds;
+    private List<ProgramInfoDto> programScholarships;
 }

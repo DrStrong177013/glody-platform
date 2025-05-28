@@ -15,6 +15,17 @@ public class ScholarshipRequirement extends BaseEntity {
     @JoinColumn(name = "scholarship_id", nullable = false)
     private Scholarship scholarship;
 
+    @Column(length = 50)
+    private String requirementType; // GPA, IELTS, MAJOR,...
+
+    @Column(length = 50)
+    private String requirementCategory; // ACADEMIC, LANGUAGE,...
+
     @Column(columnDefinition = "TEXT")
     private String requirementDetail;
+
+    private Double minValue;
+    private Double maxValue;
+    private String unit;
 }
+

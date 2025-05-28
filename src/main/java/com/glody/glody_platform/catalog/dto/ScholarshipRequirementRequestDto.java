@@ -8,11 +8,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class ScholarshipRequirementRequestDto {
-
-    @NotNull(message = "Scholarship ID is required")
     private Long scholarshipId;
-
-    @NotBlank(message = "Requirement detail is required")
+    private String requirementType;
+    private String requirementCategory;
     private String requirementDetail;
+    private Double minValue;
+    private Double maxValue;
+    private String unit;
 }
+

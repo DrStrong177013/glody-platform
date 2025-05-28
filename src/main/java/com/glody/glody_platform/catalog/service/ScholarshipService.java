@@ -1,5 +1,6 @@
 package com.glody.glody_platform.catalog.service;
 
+import com.glody.glody_platform.catalog.dto.ProgramInfoDto;
 import com.glody.glody_platform.catalog.dto.ScholarshipRequestDto;
 import com.glody.glody_platform.catalog.dto.ScholarshipResponseDto;
 import com.glody.glody_platform.catalog.entity.Program;
@@ -83,13 +84,25 @@ public class ScholarshipService {
     }
 
     private ScholarshipResponseDto toDto(Scholarship s) {
+        List<ProgramInfoDto> programs = s.getProgramScholarships() != null
+                ? s.getProgramScholarships().stream()
+                .filter(ps -> !ps.getIsDeleted())
+                .map(ps -> new ProgramInfoDto(
+                        ps.getProgram().getId(),
+                        ps.getProgram().getName()
+                ))
+                .toList()
+                : List.of();
+
         return ScholarshipResponseDto.builder()
                 .id(s.getId())
                 .name(s.getName())
                 .description(s.getDescription())
                 .minGpa(s.getMinGpa())
                 .applicableMajors(s.getApplicableMajors())
+                .programScholarships(programs)
                 .build();
     }
+
 }
 
