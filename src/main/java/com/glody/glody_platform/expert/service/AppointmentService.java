@@ -1,5 +1,6 @@
 package com.glody.glody_platform.expert.service;
 
+import com.glody.glody_platform.expert.dto.AppointmentBookingDto;
 import com.glody.glody_platform.expert.dto.AppointmentRequestDto;
 import com.glody.glody_platform.expert.dto.AppointmentResponseDto;
 import com.glody.glody_platform.expert.dto.AppointmentStatusUpdateDto;
@@ -68,14 +69,73 @@ public class AppointmentService {
         appointment.setStatus(dto.getStatus());
         appointmentRepository.save(appointment);
     }
+    @Transactional
+    public Appointment createAnonymousAppointment(AppointmentBookingDto dto) {
+        User expert = userRepository.findById(dto.getExpertId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Expert not found"));
+
+        // ✅ Không cho đặt lịch trong quá khứ
+        if (dto.getAppointmentDateTime().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không thể đặt lịch trong quá khứ");
+        }
+
+        // ✅ Kiểm tra trùng giờ
+        boolean exists = appointmentRepository.existsByExpertAndAppointmentTime(
+                expert, dto.getAppointmentDateTime());
+        if (exists) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Chuyên gia đã có lịch tại thời gian này");
+        }
+
+        Appointment appointment = new Appointment();
+        appointment.setExpert(expert);
+        appointment.setAppointmentTime(dto.getAppointmentDateTime());
+        appointment.setFullName(dto.getFullName());
+        appointment.setEmail(dto.getEmail());
+        appointment.setPhone(dto.getPhone());
+        appointment.setStatus(AppointmentStatus.PENDING);
+
+        appointmentRepository.save(appointment);
+
+        // ✅ Gửi email xác nhận (giả lập log)
+        sendConfirmationEmail(dto);
+
+        return appointment;
+    }
+    private void sendConfirmationEmail(AppointmentBookingDto dto) {
+        System.out.printf("""
+        📧 GỬI EMAIL XÁC NHẬN
+        -----------------------------------
+        To: %s
+        Nội dung: Xin chào %s,
+        Bạn đã đặt lịch hẹn thành công với chuyên gia (ID: %s)
+        Vào lúc: %s
+        Trạng thái: PENDING
+        -----------------------------------
+        """, dto.getEmail(), dto.getFullName(), dto.getExpertId(), dto.getAppointmentDateTime());
+    }
+
+
 
     private AppointmentResponseDto toDto(Appointment appointment) {
         AppointmentResponseDto dto = new AppointmentResponseDto();
         dto.setId(appointment.getId());
         dto.setAppointmentTime(appointment.getAppointmentTime());
         dto.setStatus(appointment.getStatus());
-        dto.setUserFullName(appointment.getUser().getFullName());
-        dto.setExpertFullName(appointment.getExpert().getFullName());
+
+        // ✅ An toàn cho cả lịch ẩn danh
+        dto.setUserFullName(
+                appointment.getUser() != null
+                        ? appointment.getUser().getFullName()
+                        : appointment.getFullName() // tên nhập tay khi đặt ẩn danh
+        );
+
+        dto.setExpertFullName(
+                appointment.getExpert() != null
+                        ? appointment.getExpert().getFullName()
+                        : "Chuyên gia không xác định"
+        );
+
         return dto;
     }
+
 }

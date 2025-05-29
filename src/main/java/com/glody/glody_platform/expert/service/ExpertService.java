@@ -2,13 +2,16 @@ package com.glody.glody_platform.expert.service;
 
 import com.glody.glody_platform.catalog.entity.Country;
 import com.glody.glody_platform.catalog.repository.CountryRepository;
+import com.glody.glody_platform.common.PageResponse;
 import com.glody.glody_platform.expert.dto.ExpertProfileDto;
 import com.glody.glody_platform.expert.entity.ExpertProfile;
 import com.glody.glody_platform.expert.repository.ExpertProfileRepository;
 import com.glody.glody_platform.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +34,25 @@ public class ExpertService {
                 .distinct()
                 .toList();
     }
+    public PageResponse<ExpertProfileDto> searchExperts(String country, Integer minYears, String keyword,
+                                                        int page, int size, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<ExpertProfile> results = expertRepo.searchExperts(country, minYears, keyword, pageable);
+        List<ExpertProfileDto> items = results.stream().map(this::mapToDto).toList();
+
+        PageResponse.PageInfo pageInfo = new PageResponse.PageInfo(
+                results.getNumber(), results.getSize(),
+                results.getTotalPages(), results.getTotalElements(),
+                results.hasNext(), results.hasPrevious()
+        );
+
+        return new PageResponse<>(items, pageInfo);
+    }
+
 
     private ExpertProfileDto mapToDto(ExpertProfile expert) {
         User user = expert.getUser();

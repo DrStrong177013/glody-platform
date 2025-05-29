@@ -13,6 +13,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Appointment extends BaseEntity {
+    @Column(length = 100)
+    private String fullName;
+
+    @Column(length = 100)
+    private String email;
+
+    @Column(length = 20)
+    private String phone;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // Người đặt lịch

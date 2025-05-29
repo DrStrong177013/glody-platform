@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 public class ExpertProfileController {
 
     private final ExpertProfileService expertProfileService;
-    @GetMapping("/{Id}")
+    @GetMapping("/{userId}")
     public ResponseEntity<ExpertProfileDto> getExpertProfile(@PathVariable Long userId) {
         ExpertProfileDto dto = expertProfileService.getExpertProfileByUserId(userId);
         return ResponseEntity.ok(dto);
     }
 
-    @PutMapping("/{Id}")
+    @PutMapping("/{userId}")
     public ResponseEntity<String> updateExpertProfile(@PathVariable Long userId,
                                                       @RequestBody ExpertProfileUpdateDto dto) {
         expertProfileService.updateExpertProfile(userId, dto);

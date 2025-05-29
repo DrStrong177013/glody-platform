@@ -12,4 +12,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByExpert(User expert);
     List<Appointment> findByExpertAndAppointmentTimeAfter(User expert, LocalDateTime dateTime);
     List<Appointment> findByUserId(Long userId);
+    boolean existsByExpertAndAppointmentTime(User expert, LocalDateTime appointmentTime);
+
 }
