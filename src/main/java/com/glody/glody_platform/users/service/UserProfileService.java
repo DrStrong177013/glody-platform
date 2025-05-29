@@ -69,7 +69,7 @@ public class UserProfileService {
         profile.setTargetYear(dto.getTargetYear());
         profile.setGpa(dto.getGpa());
         profile.setAvatarUrl(dto.getAvatarUrl());
-
+        user.setAvatarUrl(dto.getAvatarUrl());
 
         // Xoá chứng chỉ cũ nếu đang cập nhật
         certificateRepository.deleteAll(profile.getLanguageCertificates());

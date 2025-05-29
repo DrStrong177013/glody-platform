@@ -1,16 +1,18 @@
 package com.glody.glody_platform.expert.service;
 
 import com.glody.glody_platform.expert.dto.ChatMessageDto;
+import com.glody.glody_platform.expert.dto.ChatResponseDto;
+import com.glody.glody_platform.expert.dto.SimpleUserDto;
 import com.glody.glody_platform.expert.entity.Chat;
 import com.glody.glody_platform.expert.repository.ChatRepository;
+import com.glody.glody_platform.users.entity.Role;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class ChatService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Chat sendMessage(ChatMessageDto dto) {
+    public ChatResponseDto sendMessage(ChatMessageDto dto) {
         User sender = userRepository.findById(dto.getSenderId())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
         User receiver = userRepository.findById(dto.getReceiverId())
@@ -30,20 +32,77 @@ public class ChatService {
         chat.setSender(sender);
         chat.setReceiver(receiver);
         chat.setMessage(dto.getMessage());
+        chat.setFromExpert(dto.getFromExpert());
+        chat.setMessageType(dto.getMessageType());
+        chat.setIsRead(false);
 
-        return chatRepository.save(chat);
+        chatRepository.save(chat);
+        return toResponseDto(chat); // ✔️ trả về ChatResponseDto
     }
+
 
     public List<Chat> getConversation(Long user1Id, Long user2Id) {
-        User user1 = userRepository.findById(user1Id)
-                .orElseThrow(() -> new RuntimeException("User1 not found"));
-        User user2 = userRepository.findById(user2Id)
-                .orElseThrow(() -> new RuntimeException("User2 not found"));
+        User u1 = userRepository.findById(user1Id).orElseThrow();
+        User u2 = userRepository.findById(user2Id).orElseThrow();
 
         List<Chat> messages = new ArrayList<>();
-        messages.addAll(chatRepository.findBySenderAndReceiver(user1, user2));
-        messages.addAll(chatRepository.findByReceiverAndSender(user1, user2));
-        messages.sort((a, b) -> a.getCreatedAt().compareTo(b.getCreatedAt()));
+        messages.addAll(chatRepository.findBySenderAndReceiver(u1, u2));
+        messages.addAll(chatRepository.findByReceiverAndSender(u1, u2));
+        messages.sort(Comparator.comparing(Chat::getCreatedAt));
         return messages;
     }
+
+    public List<Chat> getUnreadMessages(Long receiverId) {
+        return chatRepository.findByReceiverIdAndIsReadFalse(receiverId);
+    }
+
+    public void markAsRead(Long chatId) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow();
+        chat.setIsRead(true);
+        chatRepository.save(chat);
+    }
+
+    public void reactToMessage(Long chatId, String reaction) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow();
+        chat.setReaction(reaction);
+        chatRepository.save(chat);
+    }
+
+    public List<User> getChatContacts(Long userId) {
+        List<User> received = chatRepository.findAllSendersToUser(userId);
+        List<User> sent = chatRepository.findAllReceiversFromUser(userId);
+
+        Set<User> contacts = new HashSet<>();
+        contacts.addAll(received);
+        contacts.addAll(sent);
+        return new ArrayList<>(contacts);
+    }
+
+    public  ChatResponseDto toResponseDto(Chat chat) {
+        ChatResponseDto dto = new ChatResponseDto();
+        dto.setId(chat.getId());
+        dto.setMessage(chat.getMessage());
+        dto.setIsRead(chat.getIsRead());
+        dto.setFromExpert(chat.getFromExpert());
+        dto.setMessageType(chat.getMessageType());
+        dto.setReaction(chat.getReaction());
+        dto.setCreatedAt(chat.getCreatedAt());
+
+        dto.setSender(toSimpleUser(chat.getSender()));
+        dto.setReceiver(toSimpleUser(chat.getReceiver()));
+        return dto;
+    }
+
+    private SimpleUserDto toSimpleUser(User user) {
+        SimpleUserDto dto = new SimpleUserDto();
+        dto.setId(user.getId());
+        dto.setFullName(user.getFullName());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setRole(
+                user.getRoles().stream().findFirst().map(Role::getRoleName).orElse("USER")
+        );
+        return dto;
+    }
+
 }
+

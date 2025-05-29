@@ -24,7 +24,7 @@ public class User extends BaseEntity {
     private String passwordHash;
 
     private String phone;
-
+    private String avatarUrl;
 
     private Boolean status = true; // TRUE = active
 
