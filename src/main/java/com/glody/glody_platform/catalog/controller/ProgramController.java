@@ -59,6 +59,11 @@ public class ProgramController {
         );
         return ResponseEntity.ok(new PageResponse<>(list, pageInfo));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<ProgramResponseDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(programService.getById(id));
+    }
+
 
     @PostMapping
     public Program create(@RequestBody ProgramRequestDto dto) {

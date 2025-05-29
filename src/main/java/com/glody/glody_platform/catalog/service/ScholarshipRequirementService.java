@@ -103,6 +103,11 @@ public class ScholarshipRequirementService {
 
         return list.stream().map(this::toDto).toList();
     }
+    public ScholarshipRequirementResponseDto getById(Long id) {
+        ScholarshipRequirement req = requirementRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Requirement not found"));
+        return toDto(req);
+    }
 
 
     private ScholarshipRequirementResponseDto toDto(ScholarshipRequirement req) {

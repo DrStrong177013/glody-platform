@@ -60,6 +60,10 @@ public class ScholarshipController {
 
         return ResponseEntity.ok(new PageResponse<>(list, pageInfo));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<ScholarshipResponseDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(scholarshipService.getById(id));
+    }
 
     @PostMapping
     public Scholarship create(@RequestBody ScholarshipRequestDto dto) {

@@ -26,6 +26,12 @@ public class UniversityService {
                 .map(this::toDto);
     }
 
+    public UniversityResponseDto getById(Long id) {
+        University u = universityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("University not found"));
+        return toDto(u);
+    }
+
     public List<UniversityResponseDto> searchAll(String keyword, Sort sort) {
         return universityRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(keyword, sort)
                 .stream()

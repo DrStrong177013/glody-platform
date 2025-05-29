@@ -33,6 +33,12 @@ public class ProgramService {
                 .map(this::toDto)
                 .toList();
     }
+    public ProgramResponseDto getById(Long id) {
+        Program p = programRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Program not found"));
+        return toDto(p);
+    }
+
 
     public Program create(ProgramRequestDto dto) {
         Program p = new Program();

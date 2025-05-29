@@ -60,6 +60,12 @@ public class UniversityController {
         return ResponseEntity.ok(new PageResponse<>(list, pageInfo));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UniversityResponseDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(universityService.getById(id));
+    }
+
+
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid UniversityRequestDto dto) {
         return ResponseEntity.ok(universityService.create(dto));

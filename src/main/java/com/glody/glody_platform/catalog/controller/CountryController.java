@@ -58,6 +58,10 @@ public class CountryController {
         );
         return ResponseEntity.ok(new PageResponse<>(list, pageInfo));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<CountryResponseDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(countryService.getById(id));
+    }
 
     @PostMapping
     public Country create(@RequestBody CountryRequestDto dto) {

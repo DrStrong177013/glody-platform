@@ -31,6 +31,11 @@ public class CountryService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+    public CountryResponseDto getById(Long id) {
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Country not found"));
+        return toDto(country);
+    }
 
     public Page<CountryResponseDto> searchPagedDto(String keyword, Pageable pageable) {
         return searchPaged(keyword, pageable).map(this::toDto);

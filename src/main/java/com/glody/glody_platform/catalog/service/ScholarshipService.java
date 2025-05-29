@@ -50,6 +50,12 @@ public class ScholarshipService {
 
         return saved;
     }
+    public ScholarshipResponseDto getById(Long id) {
+        Scholarship s = scholarshipRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Scholarship not found"));
+        return toDto(s);
+    }
+
 
     public Scholarship update(Long id, ScholarshipRequestDto dto) {
         Scholarship s = scholarshipRepository.findById(id)
