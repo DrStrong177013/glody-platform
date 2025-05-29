@@ -2,6 +2,8 @@ package com.glody.glody_platform.users.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UserProfileDto {
     private String fullName;
@@ -11,6 +13,7 @@ public class UserProfileDto {
     private String targetCountry;
     private Integer targetYear;
     private Double gpa;
-    private String languageCertificate;
-    private String dateOfBirth; // hoặc LocalDate nếu cần
+    private String avatarUrl;
+
+    private List<LanguageCertificateDto> languageCertificates;
 }

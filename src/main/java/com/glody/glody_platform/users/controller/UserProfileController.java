@@ -17,9 +17,10 @@ public class UserProfileController {
         return userProfileService.getProfile(userId);
     }
 
-    @PostMapping
+    @PutMapping
     public String saveProfile(@RequestParam Long userId, @RequestBody UserProfileDto dto) {
         userProfileService.saveOrUpdate(userId, dto);
         return "User profile saved/updated";
     }
 }
+

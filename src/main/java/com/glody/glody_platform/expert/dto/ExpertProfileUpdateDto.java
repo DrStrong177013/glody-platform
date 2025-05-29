@@ -5,18 +5,14 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ExpertProfileDto {
-    private Long id;
-    private Long userId;
+public class ExpertProfileUpdateDto {
     private String fullName;
     private String avatarUrl;
-    private String email;
 
     private String bio;
     private String expertise;
     private String experience;
     private Integer yearsOfExperience;
 
-    private List<String> countryNames;
+    private List<Long> countryIds; // ID các quốc gia tư vấn
 }
-

@@ -127,7 +127,6 @@ public class UserController {
                 .id(user.getId())
                 .email(user.getEmail())
                 .phone(user.getPhone())
-                .avatarUrl(user.getAvatarUrl())
                 .build();
     }
 }

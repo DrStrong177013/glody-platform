@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user_profiles")
@@ -18,14 +20,24 @@ public class UserProfile extends BaseEntity {
     private User user;
 
     private String fullName;
-
     private LocalDate dateOfBirth;
 
     private String nationality;
-    private String educationLevel;
+    private String educationLevel; // Ví dụ: "Thạc Sĩ"
     private String major;
     private String targetCountry;
     private Integer targetYear;
+    private String targetSemester; // Ví dụ: "Mùa Thu"
     private Double gpa;
-    private String languageCertificate;
+
+    private String universityName;
+
+    private String avatarUrl;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LanguageCertificate> languageCertificates = new ArrayList<>();
+
+    private String secondLanguageCertificate;
+
+    private String extracurricularActivities;
 }

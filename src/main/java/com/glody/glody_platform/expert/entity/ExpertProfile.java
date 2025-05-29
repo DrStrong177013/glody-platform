@@ -1,10 +1,14 @@
 package com.glody.glody_platform.expert.entity;
 
+import com.glody.glody_platform.catalog.entity.Country;
 import com.glody.glody_platform.common.BaseEntity;
 import com.glody.glody_platform.users.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "expert_profiles")
@@ -19,4 +23,16 @@ public class ExpertProfile extends BaseEntity {
     private String bio;
     private String expertise;
     private String experience;
+    private String avatarUrl;
+
+    private Integer yearsOfExperience;
+
+    @ManyToMany
+    @JoinTable(
+            name = "expert_countries",
+            joinColumns = @JoinColumn(name = "expert_id"),
+            inverseJoinColumns = @JoinColumn(name = "country_id")
+    )
+    private Set<Country> advisingCountries = new HashSet<>();
 }
+

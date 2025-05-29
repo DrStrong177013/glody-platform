@@ -1,6 +1,8 @@
 // UserService.java
 package com.glody.glody_platform.users.service;
 
+import com.glody.glody_platform.expert.entity.ExpertProfile;
+import com.glody.glody_platform.expert.repository.ExpertProfileRepository;
 import com.glody.glody_platform.users.dto.UserDto;
 import com.glody.glody_platform.users.entity.*;
 import com.glody.glody_platform.users.repository.RoleRepository;
@@ -24,6 +26,8 @@ public class UserService {
     private final UserProfileRepository userProfileRepository;
     private final SubscriptionPackageRepository subscriptionPackageRepository;
     private final UserSubscriptionRepository userSubscriptionRepository;
+    private final ExpertProfileRepository expertProfileRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     public User registerUser(UserDto userDto) {
@@ -31,22 +35,37 @@ public class UserService {
             throw new RuntimeException("Email already in use");
         }
 
-        Role userRole = roleRepository.findByRoleName("STUDENT")
-                .orElseThrow(() -> new RuntimeException("Default role not found"));
+        // ✅ Xác định vai trò
+        String roleName = userDto.getIsExpert() != null && userDto.getIsExpert() ? "EXPERT" : "STUDENT";
+        Role role = roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
 
         User user = new User();
         user.setEmail(userDto.getEmail());
         user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
         user.setPhone(userDto.getPhone());
-        user.setAvatarUrl(userDto.getAvatarUrl());
-        user.setRoles(Collections.singleton(userRole));
+        user.setRoles(Collections.singleton(role));
+        user.setFullName(userDto.getFullName());
+
+
         User savedUser = userRepository.save(user);
 
-        // ✅ Create UserProfile
+        // ✅ Create UserProfile (dù là expert hay không)
         UserProfile profile = new UserProfile();
         profile.setUser(savedUser);
         profile.setFullName(userDto.getFullName());
         userProfileRepository.save(profile);
+
+        // ✅ Nếu là expert => Tạo thêm ExpertProfile
+        if (Boolean.TRUE.equals(userDto.getIsExpert())) {
+            ExpertProfile expertProfile = new ExpertProfile();
+            expertProfile.setUser(savedUser);
+            expertProfile.setBio("");
+            expertProfile.setExpertise("");
+            expertProfile.setExperience("");
+            expertProfile.setYearsOfExperience(0);
+            expertProfileRepository.save(expertProfile);
+        }
 
         // ✅ Gán gói FREE mặc định
         SubscriptionPackage freePackage = subscriptionPackageRepository.findByName("FREE")
@@ -62,5 +81,6 @@ public class UserService {
 
         return savedUser;
     }
+
 
 }

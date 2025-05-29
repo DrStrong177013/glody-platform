@@ -13,15 +13,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Appointment extends BaseEntity {
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user; // Người đặt lịch
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expert_id")
-    private User expert;
+    private User expert; // Người được đặt (chuyên gia)
 
     private LocalDateTime appointmentTime;
-    private String status; // PENDING, CONFIRMED, COMPLETED
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
+
+
 }

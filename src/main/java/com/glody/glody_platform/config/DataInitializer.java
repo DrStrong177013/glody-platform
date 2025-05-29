@@ -30,6 +30,11 @@ public class DataInitializer {
                 student.setRoleName("STUDENT");
                 roleRepository.save(student);
             }
+            if (roleRepository.findByRoleName("EXPERT").isEmpty()) {
+                Role expert = new Role();
+                expert.setRoleName("EXPERT");
+                roleRepository.save(expert);
+            }
 
             if (roleRepository.findByRoleName("ADMIN").isEmpty()) {
                 Role admin = new Role();
