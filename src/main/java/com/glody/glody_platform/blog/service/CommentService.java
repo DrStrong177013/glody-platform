@@ -34,10 +34,13 @@ public class CommentService {
         comment.setUser(user);
         comment.setContent(dto.getContent());
 
-        if (dto.getParentId() != null) {
+        // ✅ Xử lý parentId = 0 hoặc null
+        if (dto.getParentId() != null && dto.getParentId() > 0) {
             Comment parent = commentRepository.findById(dto.getParentId())
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
             comment.setParent(parent);
+        } else {
+            comment.setParent(null); // ⛔ tránh lỗi foreign key
         }
 
         commentRepository.save(comment);
