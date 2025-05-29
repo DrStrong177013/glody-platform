@@ -1,5 +1,6 @@
 package com.glody.glody_platform.expert.service;
 
+import com.glody.glody_platform.expert.dto.ChatContactDto;
 import com.glody.glody_platform.expert.dto.ChatMessageDto;
 import com.glody.glody_platform.expert.dto.ChatResponseDto;
 import com.glody.glody_platform.expert.dto.SimpleUserDto;
@@ -68,15 +69,31 @@ public class ChatService {
         chatRepository.save(chat);
     }
 
-    public List<User> getChatContacts(Long userId) {
-        List<User> received = chatRepository.findAllSendersToUser(userId);
-        List<User> sent = chatRepository.findAllReceiversFromUser(userId);
+    public List<ChatContactDto> getChatContacts(Long userId) {
+        List<User> senders = chatRepository.findAllSendersToUser(userId);
+        List<User> receivers = chatRepository.findAllReceiversFromUser(userId);
 
-        Set<User> contacts = new HashSet<>();
-        contacts.addAll(received);
-        contacts.addAll(sent);
-        return new ArrayList<>(contacts);
+        Set<User> contactSet = new HashSet<>();
+        contactSet.addAll(senders);
+        contactSet.addAll(receivers);
+
+        return contactSet.stream()
+                .filter(u -> !u.getId().equals(userId)) // loại bỏ bản thân nếu có
+                .map(this::toContactDto)
+                .toList();
     }
+
+    private ChatContactDto toContactDto(User user) {
+        ChatContactDto dto = new ChatContactDto();
+        dto.setId(user.getId());
+        dto.setFullName(user.getFullName());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setRole(user.getRoles().stream().findFirst()
+                .map(r -> r.getRoleName())
+                .orElse("USER"));
+        return dto;
+    }
+
 
     public  ChatResponseDto toResponseDto(Chat chat) {
         ChatResponseDto dto = new ChatResponseDto();

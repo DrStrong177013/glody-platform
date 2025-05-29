@@ -1,5 +1,6 @@
 package com.glody.glody_platform.expert.controller;
 
+import com.glody.glody_platform.expert.dto.ChatContactDto;
 import com.glody.glody_platform.expert.dto.ChatMessageDto;
 import com.glody.glody_platform.expert.dto.ChatResponseDto;
 import com.glody.glody_platform.expert.entity.Chat;
@@ -62,8 +63,9 @@ public class ChatController {
 
     @Operation(summary = "Lấy danh sách người dùng đã từng nhắn tin với userId")
     @GetMapping("/contacts/{userId}")
-    public List<User> getContacts(@PathVariable Long userId) {
+    public List<ChatContactDto> getContacts(@PathVariable Long userId) {
         return chatService.getChatContacts(userId);
     }
+
 }
 
