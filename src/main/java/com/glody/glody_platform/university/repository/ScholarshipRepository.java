@@ -3,6 +3,11 @@ package com.glody.glody_platform.university.repository;
 import com.glody.glody_platform.university.entity.Scholarship;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface ScholarshipRepository extends JpaRepository<Scholarship, Long>, JpaSpecificationExecutor<Scholarship> {
+    @Query("SELECT s FROM Scholarship s LEFT JOIN FETCH s.school")
+    List<Scholarship> findAllWithSchool();
 }

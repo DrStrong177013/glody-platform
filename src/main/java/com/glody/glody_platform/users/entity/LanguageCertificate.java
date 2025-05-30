@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entity lưu trữ thông tin chứng chỉ ngôn ngữ của người dùng.
+ */
 @Entity
 @Table(name = "language_certificates")
 @Getter
@@ -15,8 +18,12 @@ public class LanguageCertificate extends BaseEntity {
     @JoinColumn(name = "profile_id", nullable = false)
     private UserProfile profile;
 
-    private String certificateName;   // TOEIC, IELTS, TOCFL, v.v.
-    private String skill;             // Listening, Reading, Speaking, Writing
-    private Integer score;            // 345, 325, etc.
-    private String resultLevel;       // A2, B1 (nếu có)
+    @Column(nullable = false)
+    private String certificateName;   // Ex: TOEIC, IELTS, TOCFL
+
+    @Column(nullable = false)
+    private String skill;             // Ex: Listening, Reading, Speaking
+
+    private Integer score;            // Ex: 800, 6.5
+    private String resultLevel;       // Ex: A2, B1, C1
 }
