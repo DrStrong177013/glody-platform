@@ -6,46 +6,61 @@ import com.glody.glody_platform.users.dto.UserResponseDto;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.repository.UserRepository;
 import com.glody.glody_platform.users.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * REST Controller quản lý tài khoản người dùng.
+ */
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "User Controller", description = "Quản lý người dùng, đăng ký, phân trang và xóa mềm")
 public class UserController {
 
     private final UserRepository userRepository;
     private final UserService userService;
 
+    /**
+     * Đăng ký người dùng mới.
+     */
+    @Operation(summary = "Đăng ký người dùng mới")
     @PostMapping("/register")
-    public User register(@RequestBody UserDto userDto) {
-        return userService.registerUser(userDto);
+    public ResponseEntity<User> register(@RequestBody UserDto userDto) {
+        User newUser = userService.registerUser(userDto);
+        return ResponseEntity.ok(newUser);
     }
 
-    // ✅ Lấy 1 user theo ID
+    /**
+     * Lấy thông tin người dùng theo ID.
+     */
+    @Operation(summary = "Lấy thông tin người dùng theo ID")
     @GetMapping("/{id}")
-    public UserResponseDto getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .filter(u -> !Boolean.TRUE.equals(u.getIsDeleted()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToDto(user);
+        return ResponseEntity.ok(convertToDto(user));
     }
 
+    /**
+     * Lấy danh sách người dùng (có phân trang hoặc toàn bộ).
+     */
+    @Operation(summary = "Lấy danh sách người dùng (có thể phân trang)")
     @GetMapping
-    public ResponseEntity<?> getUsers(
+    public ResponseEntity<PageResponse<UserResponseDto>> getUsers(
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "asc") String direction
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
     ) {
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -69,8 +84,7 @@ public class UserController {
                     usersPage.hasPrevious()
             );
 
-            PageResponse<UserResponseDto> response = new PageResponse<>(items, pageInfo);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new PageResponse<>(items, pageInfo));
         }
 
         // Trường hợp không phân trang
@@ -87,41 +101,47 @@ public class UserController {
                 false
         );
 
-        PageResponse<UserResponseDto> response = new PageResponse<>(items, pageInfo);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new PageResponse<>(items, pageInfo));
     }
 
-
-
-
-
-    // ✅ Soft delete
+    /**
+     * Xóa mềm người dùng theo ID.
+     */
+    @Operation(summary = "Xoá mềm người dùng theo ID")
     @DeleteMapping("/{id}")
-    public String softDeleteUser(@PathVariable Long id) {
+    public ResponseEntity<String> softDeleteUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
         user.setIsDeleted(true);
-        user.setDeletedAt(java.time.LocalDateTime.now());
+        user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
-        return "User soft deleted successfully";
+
+        return ResponseEntity.ok("🗑️ User đã bị xoá mềm.");
     }
 
-    // ✅ Restore
+    /**
+     * Khôi phục người dùng đã bị xoá mềm.
+     */
+    @Operation(summary = "Khôi phục người dùng đã xoá mềm")
     @PutMapping("/restore/{id}")
-    public String restoreUser(@PathVariable Long id) {
+    public ResponseEntity<String> restoreUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
         if (Boolean.TRUE.equals(user.getIsDeleted())) {
             user.setIsDeleted(false);
             user.setDeletedAt(null);
             userRepository.save(user);
-            return "User restored successfully";
-        } else {
-            return "User is already active";
+            return ResponseEntity.ok("✅ User đã được khôi phục.");
         }
+
+        return ResponseEntity.ok("User đang hoạt động, không cần khôi phục.");
     }
 
-    // Helper convert
+    /**
+     * Chuyển đổi entity User -> DTO để trả về client.
+     */
     private UserResponseDto convertToDto(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())
