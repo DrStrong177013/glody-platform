@@ -65,6 +65,7 @@ public class ExpertProfileService {
         User user = profile.getUser();
 
         ExpertProfileDto dto = new ExpertProfileDto();
+        user.setAvatarUrl(profile.getAvatarUrl());
         dto.setUserId(user.getId());
         dto.setFullName(user.getFullName());
         dto.setAvatarUrl(profile.getAvatarUrl());

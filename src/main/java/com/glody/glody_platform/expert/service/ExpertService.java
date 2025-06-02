@@ -57,7 +57,7 @@ public class ExpertService {
     private ExpertProfileDto mapToDto(ExpertProfile expert) {
         User user = expert.getUser();
         ExpertProfileDto dto = new ExpertProfileDto();
-        dto.setId(expert.getId());
+//        dto.setId(expert.getId());
         dto.setUserId(user.getId());
         dto.setFullName(user.getFullName());
         dto.setEmail(user.getEmail());

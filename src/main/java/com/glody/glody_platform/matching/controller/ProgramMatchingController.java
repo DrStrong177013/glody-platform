@@ -24,6 +24,6 @@ public class ProgramMatchingController {
     @GetMapping("/matching")
     @Operation(summary = "Gợi ý chương trình học từ hồ sơ người dùng")
     public ResponseEntity<List<ProgramMatchDto>> matchPrograms(@RequestParam Long userId) {
-        return ResponseEntity.ok(matchingService.matchPrograms(userId));
+        return ResponseEntity.ok(matchingService.findSuitablePrograms(userId));
     }
 }
