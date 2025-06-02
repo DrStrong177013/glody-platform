@@ -3,6 +3,7 @@ package com.glody.glody_platform.matching.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -40,4 +41,8 @@ public class ProgramMatchDto {
 
     @Schema(description = "Phần trăm phù hợp với hồ sơ", example = "92")
     private int matchPercentage;
+
+    @Schema(description = "Lý do phù hợp hoặc không phù hợp")
+    private List<String> matchReasons = new ArrayList<>();
+
 }

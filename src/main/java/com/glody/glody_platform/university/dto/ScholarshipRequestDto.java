@@ -24,7 +24,7 @@ public class ScholarshipRequestDto {
     @Schema(description = "Hạn đăng ký", example = "2025-06-30")
     private LocalDate applicationDeadline;
 
-    @Schema(description = "Điều kiện", example = "[\"GPA >= 8.0\", \"IELTS >= 6.5\"]")
+    @Schema(description = "Điều kiện", example = "[\"GPA >= 3.6\", \"IELTS >= 6.5\"]")
     private List<String> conditions;
 
     @Schema(description = "ID trường", example = "1")

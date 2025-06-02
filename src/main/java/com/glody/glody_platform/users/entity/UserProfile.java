@@ -29,6 +29,7 @@ public class UserProfile extends BaseEntity {
     private Integer targetYear;
     private String targetSemester; // Ví dụ: "Mùa Thu"
     private Double gpa;
+    private Double gpaScale;
 
     private String universityName;
 

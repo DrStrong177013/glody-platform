@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class ScholarshipMatchDto {
@@ -33,5 +34,6 @@ public class ScholarshipMatchDto {
     private int matchPercentage;
     @Schema(description = "Nhà tài trợ", example = "Bộ Giáo dục Đài Loan")
     private String sponsor;
+    private List<String> matchReasons;
 
 }

@@ -1,29 +1,22 @@
 package com.glody.glody_platform.users.dto;
 
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * DTO đại diện cho chứng chỉ ngôn ngữ của người dùng.
+ * DTO nhận dữ liệu chứng chỉ ngôn ngữ từ client.
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class LanguageCertificateDto {
-    private Long id;
+public class LanguageCertificateRequest {
 
     @Schema(description = "Tên chứng chỉ", example = "IELTS")
     @NotBlank(message = "Tên chứng chỉ không được để trống")
     private String certificateName;
 
     @Schema(description = "Kỹ năng liên quan", example = "null")
-    @NotBlank(message = "Kỹ năng không được để trống")
     private String skill;
 
     @Schema(description = "Điểm số", example = "6.5")

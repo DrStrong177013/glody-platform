@@ -31,7 +31,7 @@ public class ProgramDetailDto {
     @Schema(description = "Hỗ trợ học bổng", example = "true")
     private Boolean scholarshipSupport;
 
-    @Schema(description = "Điều kiện GPA", example = "8.0/10")
+    @Schema(description = "Điều kiện GPA", example = "3.2/10")
     private String gpaRequirement;
 
     @Schema(description = "Yêu cầu ngoại ngữ", example = "TOEFL 500 hoặc tương đương")

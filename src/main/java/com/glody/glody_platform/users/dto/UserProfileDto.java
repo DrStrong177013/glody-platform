@@ -44,10 +44,14 @@ public class UserProfileDto {
     @DecimalMin(value = "0.0")
     @DecimalMax(value = "10.0")
     private Double gpa;
+    @Schema(description = "GPA scale theo thang điểm 4.0 hoặc 10.0", example = "4.0")
+    @DecimalMin(value = "4.0")
+    @DecimalMax(value = "10.0")
+    private Double gpaScale;
 
     @Schema(description = "URL ảnh đại diện", example = "https://cdn.glody.vn/avatar.jpg")
     private String avatarUrl;
 
-    @Schema(description = "Danh sách chứng chỉ ngôn ngữ của người dùng")
-    private List<LanguageCertificateDto> languageCertificates;
+//    @Schema(description = "Danh sách chứng chỉ ngôn ngữ của người dùng")
+//    private List<LanguageCertificateDto> languageCertificates;
 }

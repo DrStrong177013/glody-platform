@@ -1,9 +1,11 @@
 package com.glody.glody_platform.users.controller;
 
-import com.glody.glody_platform.users.dto.LanguageCertificateDto;
+import com.glody.glody_platform.users.dto.LanguageCertificateRequest;
+import com.glody.glody_platform.users.dto.LanguageCertificateResponse;
 import com.glody.glody_platform.users.service.LanguageCertificateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +31,8 @@ public class LanguageCertificateController {
      */
     @Operation(summary = "Lấy danh sách chứng chỉ theo profile ID")
     @GetMapping("/user/{profileId}")
-    public ResponseEntity<List<LanguageCertificateDto>> getCertificatesByProfile(@PathVariable Long profileId) {
-        List<LanguageCertificateDto> certificates = certificateService.getCertificates(profileId);
+    public ResponseEntity<List<LanguageCertificateResponse>> getCertificatesByProfile(@PathVariable Long profileId) {
+        List<LanguageCertificateResponse> certificates = certificateService.getCertificates(profileId);
         return ResponseEntity.ok(certificates);
     }
 
@@ -38,16 +40,16 @@ public class LanguageCertificateController {
      * Thêm chứng chỉ mới cho hồ sơ người dùng.
      *
      * @param profileId ID hồ sơ
-     * @param dto       Dữ liệu chứng chỉ
+     * @param request   Dữ liệu chứng chỉ
      * @return Thông báo thành công
      */
     @Operation(summary = "Thêm chứng chỉ ngôn ngữ vào hồ sơ người dùng")
     @PostMapping("/user/{profileId}")
     public ResponseEntity<String> addCertificate(
             @PathVariable Long profileId,
-            @RequestBody LanguageCertificateDto dto) {
+            @Valid @RequestBody LanguageCertificateRequest request) {
 
-        certificateService.addCertificate(profileId, dto);
+        certificateService.addCertificate(profileId, request);
         return ResponseEntity.ok("📄 Chứng chỉ đã được thêm.");
     }
 
@@ -63,4 +65,21 @@ public class LanguageCertificateController {
         certificateService.deleteCertificate(certificateId);
         return ResponseEntity.ok("🗑️ Chứng chỉ đã bị xoá.");
     }
+    /**
+     * Cập nhật thông tin chứng chỉ ngôn ngữ.
+     *
+     * @param certificateId ID chứng chỉ
+     * @param request       Dữ liệu cập nhật
+     * @return Thông báo cập nhật thành công
+     */
+    @Operation(summary = "Cập nhật thông tin chứng chỉ ngôn ngữ")
+    @PutMapping("/{certificateId}")
+    public ResponseEntity<String> updateCertificate(
+            @PathVariable Long certificateId,
+            @Valid @RequestBody LanguageCertificateRequest request) {
+
+        certificateService.updateCertificate(certificateId, request);
+        return ResponseEntity.ok("✏️ Chứng chỉ đã được cập nhật.");
+    }
+
 }

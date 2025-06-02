@@ -24,6 +24,6 @@ public class LanguageCertificate extends BaseEntity {
     @Column(nullable = false)
     private String skill;             // Ex: Listening, Reading, Speaking
 
-    private Integer score;            // Ex: 800, 6.5
+    private Double score;            // Ex: 800, 6.5
     private String resultLevel;       // Ex: A2, B1, C1
 }

@@ -37,6 +37,7 @@ public class UserProfileService {
         dto.setAvatarUrl(profile.getAvatarUrl());
 
 
+
         // Mapping language certificates
         List<LanguageCertificateDto> certificateDtos = profile.getLanguageCertificates()
                 .stream()
@@ -49,7 +50,7 @@ public class UserProfileService {
                     return certDto;
                 }).toList();
 
-        dto.setLanguageCertificates(certificateDtos);
+//        dto.setLanguageCertificates(certificateDtos);
         return dto;
     }
 
@@ -75,17 +76,17 @@ public class UserProfileService {
         certificateRepository.deleteAll(profile.getLanguageCertificates());
         profile.getLanguageCertificates().clear();
 
-        if (dto.getLanguageCertificates() != null) {
-            for (LanguageCertificateDto certDto : dto.getLanguageCertificates()) {
-                LanguageCertificate cert = new LanguageCertificate();
-                cert.setProfile(profile);
-                cert.setCertificateName(certDto.getCertificateName());
-                cert.setSkill(certDto.getSkill());
-                cert.setScore(certDto.getScore());
-                cert.setResultLevel(certDto.getResultLevel());
-                profile.getLanguageCertificates().add(cert);
-            }
-        }
+//        if (dto.getLanguageCertificates() != null) {
+//            for (LanguageCertificateDto certDto : dto.getLanguageCertificates()) {
+//                LanguageCertificate cert = new LanguageCertificate();
+//                cert.setProfile(profile);
+//                cert.setCertificateName(certDto.getCertificateName());
+//                cert.setSkill(certDto.getSkill());
+//                cert.setScore(certDto.getScore());
+//                cert.setResultLevel(certDto.getResultLevel());
+//                profile.getLanguageCertificates().add(cert);
+//            }
+//        }
 
         userProfileRepository.save(profile);
     }

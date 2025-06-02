@@ -1,5 +1,6 @@
 package com.glody.glody_platform.matching.controller;
 
+import com.glody.glody_platform.common.PageResponse;
 import com.glody.glody_platform.matching.dto.ScholarshipMatchDto;
 import com.glody.glody_platform.matching.service.ScholarshipMatchingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,9 +22,19 @@ public class ScholarshipMatchingController {
 
     private final ScholarshipMatchingService matchingService;
 
-    @Operation(summary = "Gợi ý học bổng theo hồ sơ người dùng")
     @GetMapping("/matching")
-    public ResponseEntity<List<ScholarshipMatchDto>> suggest(@RequestParam Long userId) {
-        return ResponseEntity.ok(matchingService.suggestScholarships(userId));
+    @Operation(summary = "Gợi ý học bổng từ hồ sơ người dùng (có phân trang, lọc, sắp xếp)")
+    public ResponseEntity<PageResponse<ScholarshipMatchDto>> suggest(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String keyword
+    ) {
+        return ResponseEntity.ok(
+                matchingService.suggestScholarships(userId, page, size, sortBy, sortDir, keyword)
+        );
     }
+
 }

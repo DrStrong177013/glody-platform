@@ -1,15 +1,23 @@
 package com.glody.glody_platform.matching.service;
 
+import com.glody.glody_platform.common.PageResponse;
+import com.glody.glody_platform.matching.dto.MatchingHistoryDto;
 import com.glody.glody_platform.matching.dto.ProgramMatchDto;
+import com.glody.glody_platform.matching.entity.MatchingHistory;
+import com.glody.glody_platform.matching.matcher.MatchCriterion;
+import com.glody.glody_platform.matching.matcher.MatchResult;
+import com.glody.glody_platform.matching.repository.MatchingHistoryRepository;
 import com.glody.glody_platform.university.entity.Program;
 import com.glody.glody_platform.university.repository.ProgramRepository;
+import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.entity.UserProfile;
 import com.glody.glody_platform.users.repository.UserProfileRepository;
+import com.glody.glody_platform.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,116 +25,98 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProgramMatchingService {
 
+    private final List<MatchCriterion> criteria;
     private final ProgramRepository programRepository;
     private final UserProfileRepository userProfileRepository;
-    private static final Logger log = LoggerFactory.getLogger(ProgramMatchingService.class);
+    private final MatchingHistoryRepository matchingHistoryRepository;
+    private final UserRepository userRepository; // để tìm User từ userId
 
-    public List<ProgramMatchDto> findSuitablePrograms(Long userId) {
+
+    public PageResponse<ProgramMatchDto> findSuitablePrograms(
+            Long userId,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir,
+            String keyword
+    ) {
         UserProfile profile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ người dùng"));
 
-        List<Program> programs = programRepository.findAll();
-
-        return programs.stream()
-                .filter(program -> isSuitable(profile, program)) // chỉ lấy chương trình phù hợp
-                .map(program -> toDto(program)) // chuyển sang DTO
-                .sorted((a, b) -> Integer.compare(b.getMatchPercentage(), a.getMatchPercentage()))
+        List<ProgramMatchDto> allPrograms = programRepository.findAll().stream()
+                .map(program -> evaluateProgram(profile, program))
+                .filter(dto -> dto.getMatchPercentage() > 0) // hoặc thêm điều kiện khác
+                .filter(dto -> keyword == null || dto.getSchoolName().toLowerCase().contains(keyword.toLowerCase()))
+                .sorted(getComparator(sortBy, sortDir))
                 .collect(Collectors.toList());
+
+        int totalElements = allPrograms.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        int fromIndex = Math.min(page * size, totalElements);
+        int toIndex = Math.min(fromIndex + size, totalElements);
+
+        List<ProgramMatchDto> pagedItems = allPrograms.subList(fromIndex, toIndex);
+        saveProgramMatchingHistory(userId, pagedItems);
+
+        PageResponse.PageInfo pageInfo = new PageResponse.PageInfo(
+                page,
+                size,
+                totalPages,
+                totalElements,
+                page < totalPages - 1,
+                page > 0
+        );
+
+        return new PageResponse<>(pagedItems, pageInfo);
     }
+    private void saveProgramMatchingHistory(Long userId, List<ProgramMatchDto> dtos) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
 
-    private boolean isSuitable(UserProfile profile, Program program) {
-        if (program.getSchool() == null || program.getRequirement() == null) return false;
+        List<MatchingHistory> histories = dtos.stream()
+                .map(dto -> {
+                    MatchingHistory h = new MatchingHistory();
+                    h.setUser(user);
+                    h.setReferenceId(dto.getId());
+                    h.setMatchType("PROGRAM");
+                    h.setMatchPercentage(dto.getMatchPercentage());
+                    h.setAdditionalInfo(dto.getSchoolName());
+                    return h;
+                })
+                .collect(Collectors.toList());
 
-        // 1. Kiểm tra quốc gia mục tiêu
-        if (profile.getTargetCountry() != null && program.getSchool().getLocation() != null) {
-            if (!program.getSchool().getLocation().equalsIgnoreCase(profile.getTargetCountry())) {
-                log.info("Program {} bị loại do khác quốc gia: {}, cần {}",
-                        program.getId(), program.getSchool().getLocation(), profile.getTargetCountry());
-                return false;
-            }
-        }
-
-        // 2. Kiểm tra GPA
-        if (profile.getGpa() != null && program.getRequirement().getGpaRequirement() != null) {
-            try {
-                double requiredGpa = extractGpa(program.getRequirement().getGpaRequirement());
-                if (profile.getGpa() < requiredGpa) {
-                    log.info("Program {} bị loại do GPA thấp hơn yêu cầu: {}, cần >= {}",
-                            program.getId(), profile.getGpa(), requiredGpa);
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                log.warn("Không thể parse GPA requirement cho chương trình {}: {}",
-                        program.getId(), program.getRequirement().getGpaRequirement());
-                return false;
-            }
-        }
-
-        // 3. Kiểm tra ngành học
-        if (program.getMajors() != null && profile.getMajor() != null) {
-            boolean match = program.getMajors().stream()
-                    .anyMatch(m -> m.toLowerCase().contains(profile.getMajor().toLowerCase()));
-            if (!match) {
-                log.info("Program {} bị loại do ngành học không khớp: {}", program.getId(), profile.getMajor());
-                return false;
-            }
-        }
-
-        // 4. Kiểm tra chứng chỉ ngôn ngữ
-        if (program.getRequirement().getLanguageRequirement() != null) {
-            String requiredCert = extractRequiredLanguageType(program.getRequirement().getLanguageRequirement());
-            double requiredScore = extractRequiredLanguageScore(program.getRequirement().getLanguageRequirement());
-
-            boolean passed = profile.getLanguageCertificates() != null &&
-                    profile.getLanguageCertificates().stream()
-                            .filter(cert -> cert.getCertificateName().equalsIgnoreCase(requiredCert))
-                            .mapToDouble(cert -> cert.getScore())
-                            .average()
-                            .orElse(0.0) >= requiredScore;
-
-            if (!passed) {
-                log.info("Program {} bị loại do không đủ điểm ngôn ngữ yêu cầu {} >= {}",
-                        program.getId(), requiredCert, requiredScore);
-                return false;
-            }
-        }
-
-        return true;
+        matchingHistoryRepository.saveAll(histories);
     }
 
 
-    private double extractGpa(String gpaRequirement) {
-        // Lấy giá trị GPA chuẩn hóa (ưu tiên 4.0 nếu có)
-        if (gpaRequirement.contains("3.0/4")) return 3.0;
-        if (gpaRequirement.contains("4.0/4")) return 4.0;
-
-        // fallback: parse số đầu tiên
-        String[] tokens = gpaRequirement.split("[^\\d\\.]+");
-        for (String token : tokens) {
-            if (!token.isBlank()) {
-                return Double.parseDouble(token);
-            }
+    private Comparator<ProgramMatchDto> getComparator(String sortBy, String sortDir) {
+        Comparator<ProgramMatchDto> comparator = Comparator.comparing(ProgramMatchDto::getMatchPercentage);
+        if ("schoolName".equals(sortBy)) {
+            comparator = Comparator.comparing(ProgramMatchDto::getSchoolName);
         }
-        throw new NumberFormatException("Không thể parse GPA");
+
+        return "desc".equalsIgnoreCase(sortDir) ? comparator.reversed() : comparator;
     }
 
-    private String extractRequiredLanguageType(String requirement) {
-        if (requirement.toUpperCase().contains("IELTS")) return "IELTS";
-        if (requirement.toUpperCase().contains("TOEFL")) return "TOEFL";
-        return "UNKNOWN";
-    }
 
-    private double extractRequiredLanguageScore(String requirement) {
-        // Tìm điểm đầu tiên có dạng số
-        String[] tokens = requirement.split("[^\\d\\.]+");
-        for (String token : tokens) {
-            if (!token.isBlank()) return Double.parseDouble(token);
+    private ProgramMatchDto evaluateProgram(UserProfile profile, Program program) {
+        int matched = 0;
+        List<String> reasons = new ArrayList<>();
+
+        for (MatchCriterion criterion : criteria) {
+            MatchResult result = criterion.evaluate(profile, program);
+            if (result.isMatched()) matched++;
+            reasons.add(result.getReason());
         }
-        throw new NumberFormatException("Không thể parse điểm chứng chỉ tiếng Anh");
+
+        int percentage = (int) ((matched / (double) criteria.size()) * 100);
+        ProgramMatchDto dto = toDto(program, percentage);
+        dto.setMatchReasons(reasons);
+        return dto;
     }
 
 
-    private ProgramMatchDto toDto(Program program) {
+    private ProgramMatchDto toDto(Program program, int percentage) {
         ProgramMatchDto dto = new ProgramMatchDto();
         dto.setId(program.getId());
         dto.setSchoolName(program.getSchool().getName());
@@ -138,8 +128,9 @@ public class ProgramMatchingService {
         dto.setLivingCost(program.getLivingCost());
         dto.setDormFee(program.getDormFee());
         dto.setScholarshipSupport(program.getScholarshipSupport());
-        dto.setMatchPercentage(100); // Vì đã lọc trước nên mặc định phù hợp hoàn toàn
+        dto.setMatchPercentage(percentage);
         return dto;
     }
-}
 
+
+}
