@@ -3,12 +3,17 @@ package com.glody.glody_platform.config;
 
 import com.glody.glody_platform.users.entity.Role;
 import com.glody.glody_platform.users.entity.SubscriptionPackage;
+import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.repository.RoleRepository;
 import com.glody.glody_platform.users.repository.SubscriptionPackageRepository;
+import com.glody.glody_platform.users.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,11 +21,14 @@ public class DataInitializer {
 
     private final RoleRepository roleRepository;
     private final SubscriptionPackageRepository subscriptionPackageRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void initDefaults() {
         initRoles();
         initSubscriptionPackages();
+        initAdminUser();
     }
 
     private void initRoles() {
@@ -81,6 +89,31 @@ public class DataInitializer {
             }
         } catch (Exception ex) {
             System.err.println("❌ Lỗi khởi tạo gói dịch vụ mặc định: " + ex.getMessage());
+        }
+    }
+
+    private void initAdminUser() {
+        try {
+            // Kiểm tra nếu admin chưa tồn tại
+            Optional<User> existingAdmin = userRepository.findByEmail("admin@glody.com");
+            if (existingAdmin.isEmpty()) {
+                User admin = new User();
+                admin.setFullName("Super Admin");
+                admin.setEmail("admin@glody.com");
+                admin.setPasswordHash(passwordEncoder.encode("admin123")); // Sử dụng PasswordEncoder
+                admin.setPhone("0123456789");
+                admin.setAvatarUrl(null);
+                admin.setStatus(true);
+
+                Role adminRole = roleRepository.findByRoleName("ADMIN")
+                        .orElseThrow(() -> new RuntimeException("Role ADMIN không tồn tại"));
+
+                admin.getRoles().add(adminRole);
+                userRepository.save(admin);
+                System.out.println("✅ Admin account created.");
+            }
+        } catch (Exception ex) {
+            System.err.println("❌ Lỗi khởi tạo tài khoản admin mặc định: " + ex.getMessage());
         }
     }
 }

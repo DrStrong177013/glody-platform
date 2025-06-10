@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * REST Controller xử lý xác thực người dùng (authentication).
  */
@@ -44,7 +46,12 @@ public class AuthController {
             throw new RuntimeException("Thông tin đăng nhập không đúng.");
         }
 
-        String token = jwtTokenUtil.generateToken(String.valueOf(user.getId()), user.getEmail());
+        List<String> roleNames = user.getRoles().stream()
+                .map(role -> "ROLE_" + role.getRoleName().toUpperCase()) // e.g., ROLE_ADMIN
+                .toList();
+
+        String token = jwtTokenUtil.generateToken(String.valueOf(user.getId()), user.getEmail(), roleNames);
+
 
         String fullName = userProfileRepository.findByUserId(user.getId())
                 .map(UserProfile::getFullName)

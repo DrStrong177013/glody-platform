@@ -3,10 +3,13 @@ package com.glody.glody_platform.expert.controller;
 import com.glody.glody_platform.expert.dto.ExpertProfileDto;
 import com.glody.glody_platform.expert.dto.ExpertProfileUpdateDto;
 import com.glody.glody_platform.expert.service.ExpertProfileService;
+import com.glody.glody_platform.users.entity.User;
+import com.glody.glody_platform.users.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -19,33 +22,30 @@ import org.springframework.web.bind.annotation.*;
 public class ExpertProfileController {
 
     private final ExpertProfileService expertProfileService;
+    private final UserRepository userRepository;
 
-    /**
-     * Lấy thông tin hồ sơ chuyên gia theo userId.
-     *
-     * @param userId ID của người dùng chuyên gia
-     * @return Dữ liệu hồ sơ chuyên gia
-     */
-    @Operation(summary = "Lấy thông tin hồ sơ chuyên gia")
-    @GetMapping("/{userId}")
-    public ResponseEntity<ExpertProfileDto> getExpertProfile(@PathVariable Long userId) {
+    private Long getUserIdFromAuth(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+        return user.getId();
+    }
+
+    @Operation(summary = "Lấy thông tin hồ sơ chuyên gia của chính mình")
+    @GetMapping("/me")
+    public ResponseEntity<ExpertProfileDto> getExpertProfile(Authentication authentication) {
+        Long userId = getUserIdFromAuth(authentication);
         ExpertProfileDto dto = expertProfileService.getExpertProfileByUserId(userId);
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Cập nhật thông tin hồ sơ chuyên gia.
-     *
-     * @param userId ID người dùng chuyên gia
-     * @param dto    Dữ liệu cần cập nhật
-     * @return Thông báo cập nhật thành công
-     */
-    @Operation(summary = "Cập nhật thông tin hồ sơ chuyên gia")
-    @PutMapping("/{userId}")
+    @Operation(summary = "Cập nhật thông tin hồ sơ chuyên gia của chính mình")
+    @PutMapping("/me")
     public ResponseEntity<String> updateExpertProfile(
-            @PathVariable Long userId,
+            Authentication authentication,
             @RequestBody ExpertProfileUpdateDto dto) {
 
+        Long userId = getUserIdFromAuth(authentication);
         expertProfileService.updateExpertProfile(userId, dto);
         return ResponseEntity.ok("📝 Hồ sơ chuyên gia đã được cập nhật thành công.");
     }

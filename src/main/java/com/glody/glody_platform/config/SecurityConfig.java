@@ -1,9 +1,11 @@
 package com.glody.glody_platform.config;
 
+import com.glody.glody_platform.config.endpoints.*;
 import com.glody.glody_platform.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,21 +23,29 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http.csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/api/auth/**",
-//                                "/api/users/register",
-//                                "/v3/api-docs/**",
-//                                "/swagger-ui/**",
-//                                "/swagger-ui.html"
-//                        ).permitAll()
-//                        .anyRequest().authenticated())
-//                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        http.csrf(csrf -> csrf.disable())
+        http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
+
+                        // === PUBLIC ===
+                        .requestMatchers(HttpMethod.GET, PublicEndpoints.GET_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.POST, PublicEndpoints.POST_ENDPOINTS).permitAll()
+
+                        // === AUTHENTICATED ===
+                        .requestMatchers(AuthenticatedEndpoints.ALL_ENDPOINTS).authenticated()
+
+                        // === STUDENT ===
+                        .requestMatchers(StudentEndpoints.ALL_ENDPOINTS).hasRole("STUDENT")
+
+                        // === EXPERT ===
+                        .requestMatchers(ExpertEndpoints.ALL_ENDPOINTS).hasRole("EXPERT")
+
+                        // === ADMIN ===
+                        .requestMatchers(AdminEndpoints.ALL_ENDPOINTS).hasRole("ADMIN")
+
+                        // === DEFAULT ===
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

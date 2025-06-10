@@ -33,6 +33,7 @@ public class UserProfileService {
         dto.setMajor(profile.getMajor());
         dto.setTargetCountry(profile.getTargetCountry());
         dto.setTargetYear(profile.getTargetYear());
+        dto.setGpaScale(profile.getGpaScale());
         dto.setGpa(profile.getGpa());
         dto.setAvatarUrl(profile.getAvatarUrl());
 
@@ -69,6 +70,7 @@ public class UserProfileService {
         profile.setTargetCountry(dto.getTargetCountry());
         profile.setTargetYear(dto.getTargetYear());
         profile.setGpa(dto.getGpa());
+        profile.setGpaScale(dto.getGpaScale());
         profile.setAvatarUrl(dto.getAvatarUrl());
         user.setAvatarUrl(dto.getAvatarUrl());
 

@@ -3,6 +3,7 @@ package com.glody.glody_platform.expert.controller;
 import com.glody.glody_platform.expert.dto.ConsultationNoteDto;
 import com.glody.glody_platform.expert.entity.ConsultationNote;
 import com.glody.glody_platform.expert.service.ConsultationNoteService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST Controller quản lý ghi chú tư vấn của chuyên gia cho từng cuộc hẹn.
  */
+@Hidden
 @RestController
 @RequestMapping("/api/consultation-notes")
 @RequiredArgsConstructor

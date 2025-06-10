@@ -2,19 +2,20 @@ package com.glody.glody_platform.users.controller;
 
 import com.glody.glody_platform.users.dto.LanguageCertificateRequest;
 import com.glody.glody_platform.users.dto.LanguageCertificateResponse;
+import com.glody.glody_platform.users.entity.User;
+import com.glody.glody_platform.users.repository.UserProfileRepository;
+import com.glody.glody_platform.users.repository.UserRepository;
 import com.glody.glody_platform.users.service.LanguageCertificateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * REST Controller quản lý chứng chỉ ngôn ngữ của người dùng.
- */
 @RestController
 @RequestMapping("/api/language-certificates")
 @RequiredArgsConstructor
@@ -22,56 +23,45 @@ import java.util.List;
 public class LanguageCertificateController {
 
     private final LanguageCertificateService certificateService;
+    private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
 
-    /**
-     * Lấy danh sách chứng chỉ ngôn ngữ theo profile người dùng.
-     *
-     * @param profileId ID hồ sơ người dùng
-     * @return Danh sách chứng chỉ
-     */
-    @Operation(summary = "Lấy danh sách chứng chỉ theo profile ID")
-    @GetMapping("/user/{profileId}")
-    public ResponseEntity<List<LanguageCertificateResponse>> getCertificatesByProfile(@PathVariable Long profileId) {
+    private Long getProfileIdFromAuth(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+
+        return userProfileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ người dùng"))
+                .getId();
+    }
+
+    @Operation(summary = "Lấy danh sách chứng chỉ của người dùng hiện tại")
+    @GetMapping
+    public ResponseEntity<List<LanguageCertificateResponse>> getCertificates(Authentication authentication) {
+        Long profileId = getProfileIdFromAuth(authentication);
         List<LanguageCertificateResponse> certificates = certificateService.getCertificates(profileId);
         return ResponseEntity.ok(certificates);
     }
 
-    /**
-     * Thêm chứng chỉ mới cho hồ sơ người dùng.
-     *
-     * @param profileId ID hồ sơ
-     * @param request   Dữ liệu chứng chỉ
-     * @return Thông báo thành công
-     */
-    @Operation(summary = "Thêm chứng chỉ ngôn ngữ vào hồ sơ người dùng")
-    @PostMapping("/user/{profileId}")
+    @Operation(summary = "Thêm chứng chỉ ngôn ngữ vào hồ sơ người dùng hiện tại")
+    @PostMapping
     public ResponseEntity<String> addCertificate(
-            @PathVariable Long profileId,
+            Authentication authentication,
             @Valid @RequestBody LanguageCertificateRequest request) {
 
+        Long profileId = getProfileIdFromAuth(authentication);
         certificateService.addCertificate(profileId, request);
         return ResponseEntity.ok("📄 Chứng chỉ đã được thêm.");
     }
 
-    /**
-     * Xoá một chứng chỉ ngôn ngữ theo ID.
-     *
-     * @param certificateId ID chứng chỉ
-     * @return Thông báo xoá thành công
-     */
     @Operation(summary = "Xoá chứng chỉ ngôn ngữ theo ID")
     @DeleteMapping("/{certificateId}")
     public ResponseEntity<String> deleteCertificate(@PathVariable Long certificateId) {
         certificateService.deleteCertificate(certificateId);
         return ResponseEntity.ok("🗑️ Chứng chỉ đã bị xoá.");
     }
-    /**
-     * Cập nhật thông tin chứng chỉ ngôn ngữ.
-     *
-     * @param certificateId ID chứng chỉ
-     * @param request       Dữ liệu cập nhật
-     * @return Thông báo cập nhật thành công
-     */
+
     @Operation(summary = "Cập nhật thông tin chứng chỉ ngôn ngữ")
     @PutMapping("/{certificateId}")
     public ResponseEntity<String> updateCertificate(
@@ -81,5 +71,4 @@ public class LanguageCertificateController {
         certificateService.updateCertificate(certificateId, request);
         return ResponseEntity.ok("✏️ Chứng chỉ đã được cập nhật.");
     }
-
 }

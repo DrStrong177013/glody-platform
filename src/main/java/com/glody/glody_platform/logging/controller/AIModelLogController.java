@@ -3,10 +3,11 @@ package com.glody.glody_platform.logging.controller;
 import com.glody.glody_platform.logging.dto.AIModelLogDto;
 import com.glody.glody_platform.logging.entity.AIModelLog;
 import com.glody.glody_platform.logging.service.AIModelLogService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+@Hidden
 @RestController
 @RequestMapping("/api/ai-logs")
 @RequiredArgsConstructor

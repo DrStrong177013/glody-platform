@@ -1,16 +1,16 @@
 package com.glody.glody_platform.users.controller;
 
 import com.glody.glody_platform.users.dto.UserProfileDto;
+import com.glody.glody_platform.users.entity.User;
+import com.glody.glody_platform.users.repository.UserRepository;
 import com.glody.glody_platform.users.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * REST Controller quản lý hồ sơ người dùng.
- */
 @RestController
 @RequestMapping("/api/user-profiles")
 @RequiredArgsConstructor
@@ -18,33 +18,30 @@ import org.springframework.web.bind.annotation.*;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
+    private final UserRepository userRepository;
 
-    /**
-     * Lấy thông tin hồ sơ người dùng theo ID.
-     *
-     * @param userId ID người dùng
-     * @return Hồ sơ người dùng
-     */
-    @Operation(summary = "Lấy hồ sơ của chính mình (theo userId)")
+    private Long getUserIdFromAuth(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+        return user.getId();
+    }
+
+    @Operation(summary = "Lấy hồ sơ của chính mình")
     @GetMapping("/me")
-    public ResponseEntity<UserProfileDto> getMyProfile(@RequestParam Long userId) {
+    public ResponseEntity<UserProfileDto> getMyProfile(Authentication authentication) {
+        Long userId = getUserIdFromAuth(authentication);
         UserProfileDto profile = userProfileService.getProfile(userId);
         return ResponseEntity.ok(profile);
     }
 
-    /**
-     * Cập nhật hoặc tạo mới hồ sơ người dùng.
-     *
-     * @param userId ID người dùng
-     * @param dto    Dữ liệu hồ sơ
-     * @return Thông báo thành công
-     */
-    @Operation(summary = "Lưu hoặc cập nhật hồ sơ người dùng")
-    @PutMapping
+    @Operation(summary = "Lưu hoặc cập nhật hồ sơ người dùng hiện tại")
+    @PutMapping("/me")
     public ResponseEntity<String> saveProfile(
-            @RequestParam Long userId,
+            Authentication authentication,
             @RequestBody UserProfileDto dto) {
 
+        Long userId = getUserIdFromAuth(authentication);
         userProfileService.saveOrUpdate(userId, dto);
         return ResponseEntity.ok("📄 Hồ sơ người dùng đã được lưu/cập nhật.");
     }
