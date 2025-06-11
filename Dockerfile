@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -B -DskipTe
 FROM builder AS package
 
 COPY src/ src/
-COPY application.properties src/main/resources/
+
 
 # Add encoding config
 ENV MAVEN_OPTS="-Dfile.encoding=UTF-8"
