@@ -13,14 +13,14 @@ import java.util.*;
 @Service
 public class VnPayService {
 
-    public String createPaymentUrl(HttpServletRequest req, int amount, String orderInfo) throws UnsupportedEncodingException {
+    public String createPaymentUrl(HttpServletRequest req, int amount, String orderInfo, String txnRef) throws UnsupportedEncodingException {
         Map<String, String> vnpParams = new HashMap<>();
         vnpParams.put("vnp_Version", "2.1.0");
         vnpParams.put("vnp_Command", "pay");
         vnpParams.put("vnp_TmnCode", VnPayConfig.vnp_TmnCode);
         vnpParams.put("vnp_Amount", String.valueOf(amount * 100));
         vnpParams.put("vnp_CurrCode", "VND");
-        vnpParams.put("vnp_TxnRef", String.valueOf(System.currentTimeMillis()));
+        vnpParams.put("vnp_TxnRef", txnRef);
         vnpParams.put("vnp_OrderInfo", orderInfo);
         vnpParams.put("vnp_OrderType", "other"); // ✅ Rất quan trọng – bắt buộc
 

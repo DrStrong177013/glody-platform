@@ -37,15 +37,17 @@ public class InvoiceService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String code = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+        String txnRef = String.valueOf(System.currentTimeMillis());
 
         Invoice invoice = new Invoice();
         invoice.setUser(user);
-        invoice.setCode(code);
+        invoice.setCode(txnRef);
         invoice.setPackageId(pack.getId());
         invoice.setTotalAmount(pack.getPrice());
         invoice.setStatus(InvoiceStatus.PENDING);
-        invoice.setNote(dto.getNote());
+        invoice.setNote("Đăng ký gói " + pack.getName());
+        invoice.setExpiredAt(LocalDateTime.now().plusMinutes(15));
+
 
         InvoiceItem item = new InvoiceItem();
         item.setInvoice(invoice);
@@ -64,10 +66,11 @@ public class InvoiceService {
         res.setId(invoice.getId());
         res.setCode(invoice.getCode());
         res.setPackageId(invoice.getPackageId());
-        res.setPackageName(pack.getName());
+        res.setNote(invoice.getNote());
         res.setTotalAmount(invoice.getTotalAmount());
         res.setStatus(invoice.getStatus().name());
         res.setCreatedAt(invoice.getCreatedAt());
+        res.setExpiredAt(invoice.getExpiredAt());
 
         return res;
     }

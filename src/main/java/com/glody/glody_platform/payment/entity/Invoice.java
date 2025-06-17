@@ -26,11 +26,11 @@ public class Invoice extends BaseEntity {
     private Double totalAmount;
 
     @Enumerated(EnumType.STRING)
-    private InvoiceStatus status; // PENDING, PAID, FAILED
+    private InvoiceStatus status = InvoiceStatus.PENDING;
 
     private LocalDateTime paidAt;
     private String note;
-
+    private LocalDateTime expiredAt;
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceItem> items = new ArrayList<>();
 

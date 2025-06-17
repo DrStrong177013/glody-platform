@@ -7,6 +7,7 @@ import com.glody.glody_platform.payment.enums.InvoiceStatus;
 import com.glody.glody_platform.payment.enums.PaymentStatus;
 import com.glody.glody_platform.payment.repository.InvoiceRepository;
 import com.glody.glody_platform.payment.repository.PaymentRepository;
+import com.glody.glody_platform.payment.service.PaymentProcessingService;
 import com.glody.glody_platform.payment.utils.HMACUtil;
 import com.glody.glody_platform.users.dto.UserSubscriptionRequestDto;
 import com.glody.glody_platform.users.service.UserSubscriptionService;
@@ -28,89 +29,56 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PaymentViewController {
 
-    private final InvoiceRepository invoiceRepository;
-    private final PaymentRepository paymentRepository;
-    private final UserSubscriptionService userSubscriptionService;
+    private final PaymentProcessingService paymentProcessingService;
 
     @GetMapping("/payment-return")
     public String handleReturnUrl(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
-        Map<String, String[]> paramMap = request.getParameterMap();
-        Map<String, String> vnpParams = new HashMap<>();
-
-        for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
-            vnpParams.put(entry.getKey(), entry.getValue()[0]);
-        }
-
-        String receivedHash = vnpParams.get("vnp_SecureHash");
-        vnpParams.remove("vnp_SecureHash");
-        vnpParams.remove("vnp_SecureHashType");
-
-        List<String> sortedKeys = new ArrayList<>(vnpParams.keySet());
-        Collections.sort(sortedKeys);
-        StringBuilder sb = new StringBuilder();
-        for (String key : sortedKeys) {
-            sb.append(key).append("=").append(vnpParams.get(key)).append("&");
-        }
-        if (sb.length() > 0) sb.setLength(sb.length() - 1);
-
-        String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, sb.toString());
-        boolean isValid = calculatedHash.equals(receivedHash);
-        boolean isSuccess = "00".equals(vnpParams.get("vnp_ResponseCode"));
-
+        Map<String, String> vnpParams = extractVnpParams(request);
         String txnRef = vnpParams.get("vnp_TxnRef");
+
         model.addAttribute("txnRef", txnRef);
 
-        if (!isValid) {
+        String receivedHash = vnpParams.remove("vnp_SecureHash");
+        vnpParams.remove("vnp_SecureHashType");
+
+        if (!isValidChecksum(vnpParams, receivedHash)) {
             model.addAttribute("statusClass", "fail");
             model.addAttribute("message", "⚠️ Chữ ký không hợp lệ!");
             return "payment-result";
         }
 
-        if (!isSuccess) {
-            model.addAttribute("statusClass", "fail");
-            model.addAttribute("message", "❌ Giao dịch không thành công.");
-            return "payment-result";
-        }
-
-        Optional<Invoice> optionalInvoice = invoiceRepository.findByCode(txnRef);
-        if (optionalInvoice.isPresent()) {
-            Invoice invoice = optionalInvoice.get();
-
-            invoice.setStatus(InvoiceStatus.PAID);
-            invoice.setUpdatedAt(LocalDateTime.now());
-            invoiceRepository.save(invoice);
-
-            Payment payment = new Payment();
-            payment.setInvoice(invoice);
-            payment.setTransactionId(vnpParams.get("vnp_TransactionNo"));
-            payment.setBankCode(vnpParams.get("vnp_BankCode"));
-            payment.setCardType(vnpParams.get("vnp_CardType"));
-            payment.setPaidAt(LocalDateTime.now());
-            payment.setProvider("VNPAY");
-            payment.setStatus(PaymentStatus.SUCCESS);
-            payment.setResponseCode(vnpParams.get("vnp_ResponseCode"));
-            payment.setRawResponse(buildRawResponseUrl(vnpParams));
-            paymentRepository.save(payment);
-
-            // ✅ Apply subscription gói đã mua
-            UserSubscriptionRequestDto subDto = new UserSubscriptionRequestDto();
-            subDto.setPackageId(invoice.getPackageId());
-            userSubscriptionService.createSubscription(invoice.getUser().getId(), subDto);
-
+        try {
+            paymentProcessingService.processVnPayReturn(vnpParams);
             model.addAttribute("statusClass", "success");
             model.addAttribute("message", "🎉 Giao dịch thành công và gói đã được kích hoạt!");
-        } else {
+        } catch (RuntimeException ex) {
             model.addAttribute("statusClass", "fail");
-            model.addAttribute("message", "⚠️ Không tìm thấy hóa đơn!");
+            model.addAttribute("message", "❌ " + ex.getMessage());
         }
 
         return "payment-result";
     }
 
-    private String buildRawResponseUrl(Map<String, String> params) {
-        StringBuilder sb = new StringBuilder("?");
-        params.forEach((k, v) -> sb.append(k).append("=").append(v).append("&"));
-        if (sb.length() > 1) sb.setLength(sb.length() - 1);
-        return sb.toString();
+    private boolean isValidChecksum(Map<String, String> params, String receivedHash) {
+        List<String> sortedKeys = new ArrayList<>(params.keySet());
+        Collections.sort(sortedKeys);
+
+        StringBuilder sb = new StringBuilder();
+        for (String key : sortedKeys) {
+            sb.append(key).append("=").append(params.get(key)).append("&");
+        }
+        if (sb.length() > 0) sb.setLength(sb.length() - 1);
+
+        String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, sb.toString());
+        return calculatedHash.equals(receivedHash);
+    }
+
+    private Map<String, String> extractVnpParams(HttpServletRequest request) throws UnsupportedEncodingException {
+        Map<String, String[]> paramMap = request.getParameterMap();
+        Map<String, String> result = new HashMap<>();
+        for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+            result.put(entry.getKey(), URLDecoder.decode(entry.getValue()[0], StandardCharsets.UTF_8));
+        }
+        return result;
     }
 }

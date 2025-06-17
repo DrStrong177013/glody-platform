@@ -13,6 +13,9 @@ public class InvoiceMapper {
         dto.setStatus(invoice.getStatus().name());
         dto.setCreatedAt(invoice.getCreatedAt());
         dto.setPaidAt(invoice.getPaidAt());
+        dto.setNote(invoice.getNote());
+        dto.setExpiredAt(invoice.getExpiredAt());
+
         return dto;
     }
 }

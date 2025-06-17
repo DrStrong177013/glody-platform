@@ -11,11 +11,13 @@ public class InvoiceResponseDto {
     private Long id;
     private String code;
     private Long packageId;
-    private String packageName;
+
+    private String note;
     private Double totalAmount;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime paidAt;
+    private LocalDateTime expiredAt;
 }
 
 

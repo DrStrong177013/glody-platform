@@ -6,7 +6,9 @@ public class AuthenticatedEndpoints {
             "/api/chats/**",
             "/api/user-subscriptions/**",
             "/api/users/me/roles",
-            "/api/feedbacks"
+            "/api/feedbacks",
+            "/api/invoices",
+            "/api/invoices/**"
 
     };
 }
