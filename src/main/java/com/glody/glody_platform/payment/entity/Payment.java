@@ -20,7 +20,9 @@ public class Payment extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false) // 👈 Thêm dòng này
+    private User user;
     private String provider; // e.g., "VNPAY"
     private String transactionId;
     private String bankCode;

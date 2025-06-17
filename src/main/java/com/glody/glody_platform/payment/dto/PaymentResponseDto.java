@@ -2,6 +2,7 @@ package com.glody.glody_platform.payment.dto;
 
 
 import com.glody.glody_platform.payment.enums.PaymentStatus;
+import com.glody.glody_platform.users.entity.User;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 public class PaymentResponseDto {
     private Long id;
+    private User user;
     private String invoiceCode;
     private String provider;
     private String transactionId;

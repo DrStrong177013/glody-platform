@@ -44,6 +44,7 @@ public class PaymentProcessingService {
 
         Payment payment = new Payment();
         payment.setInvoice(invoice);
+        payment.setUser(invoice.getUser());
         payment.setTransactionId(params.get("vnp_TransactionNo"));
         payment.setBankCode(params.get("vnp_BankCode"));
         payment.setCardType(params.get("vnp_CardType"));
