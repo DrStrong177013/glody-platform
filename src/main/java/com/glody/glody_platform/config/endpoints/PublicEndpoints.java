@@ -25,7 +25,9 @@ public class PublicEndpoints {
             "/api/payments/history",
             "/api/payments/invoices",
             "/api/payments/payment-return",
-            "/api/payment-return"
+            "/api/payment-return",
+            "/api/payments/vnpay-ipn"
+
     };
 
     public static final String[] POST_ENDPOINTS = {
