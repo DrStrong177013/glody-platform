@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -53,14 +52,9 @@ public class VnPayService {
         for (String fieldName : fieldNames) {
             String value = vnpParams.get(fieldName);
             if (value != null && !value.isEmpty()) {
-                // ❗ hashData giữ nguyên (không encode)
-                hashData.append(fieldName).append('=').append(value).append('&');
-
-                // ✅ query encode đúng UTF-8
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8));
-                query.append('=');
-                query.append(URLEncoder.encode(value, StandardCharsets.UTF_8));
-                query.append('&');
+                String encodedValue = URLEncoder.encode(value, "UTF-8");
+                hashData.append(fieldName).append('=').append(encodedValue).append('&');
+                query.append(fieldName).append('=').append(encodedValue).append('&');
             }
         }
 

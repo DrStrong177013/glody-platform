@@ -42,16 +42,14 @@ public class PaymentViewController {
         String receivedHash = vnpParams.remove("vnp_SecureHash");
         vnpParams.remove("vnp_SecureHashType");
 
-        ChecksumResult result = validateChecksum(vnpParams, receivedHash);
 
-        if (!result.isValid()) {
+
+        if (!isValidChecksum(vnpParams, receivedHash, model)) {
             model.addAttribute("statusClass", "fail");
             model.addAttribute("message", "⚠️ Chữ ký không hợp lệ!");
-            model.addAttribute("rawData", result.rawData());
-            model.addAttribute("receivedHash", receivedHash);
-            model.addAttribute("calculatedHash", result.calculatedHash());
             return "payment-result";
         }
+
 
 
         try {
@@ -66,7 +64,7 @@ public class PaymentViewController {
         return "payment-result";
     }
 
-    private ChecksumResult validateChecksum(Map<String, String> params, String receivedHash) {
+    private boolean isValidChecksum(Map<String, String> params, String receivedHash, Model model) {
         List<String> sortedKeys = new ArrayList<>(params.keySet());
         Collections.sort(sortedKeys);
 
@@ -78,10 +76,15 @@ public class PaymentViewController {
 
         String rawData = sb.toString();
         String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, rawData);
-        boolean isValid = calculatedHash.equals(receivedHash);
 
-        return new ChecksumResult(isValid, rawData, calculatedHash);
+        // ✅ Add to model for debug
+        model.addAttribute("rawData", rawData);
+        model.addAttribute("calculatedHash", calculatedHash);
+        model.addAttribute("receivedHash", receivedHash);
+
+        return calculatedHash.equals(receivedHash);
     }
+
 
 
 
