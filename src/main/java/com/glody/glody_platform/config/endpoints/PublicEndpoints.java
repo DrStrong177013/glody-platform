@@ -23,7 +23,9 @@ public class PublicEndpoints {
             "/api/countries",
             "/api/countries/*",
             "/api/payments/history",
-            "/api/payments/invoices"
+            "/api/payments/invoices",
+            "/api/payments/payment-return",
+            "/api/payment-return"
     };
 
     public static final String[] POST_ENDPOINTS = {
