@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -40,16 +41,41 @@ public class PaymentController {
     }
 
     @GetMapping("/payment-return")
-    public ResponseEntity<String> paymentReturn(HttpServletRequest request) {
-        Map<String, String[]> params = request.getParameterMap();
-        // TODO: validate vnp_SecureHash again to confirm integrity
-        String responseCode = request.getParameter("vnp_ResponseCode");
-        if ("00".equals(responseCode)) {
-            return ResponseEntity.ok("Thanh toán thành công ✔️");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thanh toán thất bại ❌");
+    public String handleReturnUrl(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
+        Map<String, String[]> paramMap = request.getParameterMap();
+        Map<String, String> vnpParams = new HashMap<>();
+
+        for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+            vnpParams.put(entry.getKey(), URLDecoder.decode(entry.getValue()[0], StandardCharsets.UTF_8));
         }
+
+        String receivedHash = vnpParams.get("vnp_SecureHash");
+        vnpParams.remove("vnp_SecureHash");
+        vnpParams.remove("vnp_SecureHashType");
+
+        List<String> sortedKeys = new ArrayList<>(vnpParams.keySet());
+        Collections.sort(sortedKeys);
+        StringBuilder sb = new StringBuilder();
+        for (String key : sortedKeys) {
+            sb.append(key).append("=").append(vnpParams.get(key)).append("&");
+        }
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
+
+        String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, sb.toString());
+
+        boolean isValid = calculatedHash.equals(receivedHash);
+        boolean isSuccess = "00".equals(vnpParams.get("vnp_ResponseCode"));
+
+        model.addAttribute("txnRef", vnpParams.get("vnp_TxnRef"));
+        model.addAttribute("statusClass", isValid && isSuccess ? "success" : "fail");
+        model.addAttribute("message", isValid ? (isSuccess ? "🎉 Giao dịch thành công!" : "❌ Giao dịch không thành công.") : "⚠️ Chữ ký không hợp lệ!");
+
+        return "payment-result"; // khớp với file payment-result.html trong templates/
     }
+
+
     @GetMapping("/vnpay-ipn")
     public ResponseEntity<Map<String, String>> handleVnPayIPN(HttpServletRequest request) throws UnsupportedEncodingException {
         Map<String, String[]> paramMap = request.getParameterMap();

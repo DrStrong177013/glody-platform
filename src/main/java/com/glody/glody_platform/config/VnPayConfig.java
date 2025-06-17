@@ -9,5 +9,5 @@ public class VnPayConfig {
     public static final String vnp_TmnCode = "AMYDSC09"; // lấy từ VNPay
     public static final String vnp_HashSecret = "JA3MQMZH0WDW07A3BPDRQDSMP5YEWUB5"; // lấy từ VNPay
     public static final String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"; // đổi khi lên prod
-    public static final String vnp_ReturnUrl = "http://115.73.218.193:9876/api/payment-return";
+    public static final String vnp_ReturnUrl = "http://115.73.218.193:9876/api/payments/payment-return";
 }
