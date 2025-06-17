@@ -51,7 +51,6 @@ public class PaymentProcessingService {
         payment.setResponseCode(responseCode);
         payment.setProvider("VNPAY");
         payment.setStatus(PaymentStatus.SUCCESS);
-        payment.setRawResponse(params.toString());
         paymentRepository.save(payment);
 
         // Apply subscription
