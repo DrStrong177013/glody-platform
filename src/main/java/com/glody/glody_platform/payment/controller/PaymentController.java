@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class PaymentController {
 

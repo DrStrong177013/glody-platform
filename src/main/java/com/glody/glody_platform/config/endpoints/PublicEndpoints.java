@@ -21,7 +21,9 @@ public class PublicEndpoints {
             "/api/scholarships/*",
             "/api/countries",
             "/api/countries/*",
-            "/api/payments/*"
+            "/api/payment-return",
+            "/api/create-payment",
+            "/api/vnpay-ipn",
 
     };
 
