@@ -30,5 +30,6 @@ public class Payment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status; // SUCCESS, FAIL
     private String responseCode;
-    private String rawResponse; // Full URL callback
+    @Column(columnDefinition = "TEXT")
+    private String rawResponse;
 }
