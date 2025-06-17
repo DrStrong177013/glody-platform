@@ -38,7 +38,7 @@ public class PaymentViewController {
         Map<String, String> vnpParams = new HashMap<>();
 
         for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
-            vnpParams.put(entry.getKey(), URLDecoder.decode(entry.getValue()[0], StandardCharsets.UTF_8));
+            vnpParams.put(entry.getKey(), entry.getValue()[0]);
         }
 
         String receivedHash = vnpParams.get("vnp_SecureHash");
