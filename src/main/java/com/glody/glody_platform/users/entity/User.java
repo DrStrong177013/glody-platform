@@ -2,8 +2,7 @@ package com.glody.glody_platform.users.entity;
 
 import com.glody.glody_platform.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +11,7 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @Setter
+
 public class User extends BaseEntity {
 
     @Column(nullable = false)

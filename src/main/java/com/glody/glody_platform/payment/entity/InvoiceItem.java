@@ -12,14 +12,14 @@ import lombok.Setter;
 public class InvoiceItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id")
+    @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "package_id")
-    private SubscriptionPackage subscriptionPackage;
+    private String itemName;
+    private Double price;
+    private Integer quantity = 1;
+    private String description;
 
-    private Integer quantity;
-
-    private Double unitPrice;
+    private String referenceType; // e.g., "SUBSCRIPTION_PACKAGE"
+    private Long referenceId;
 }

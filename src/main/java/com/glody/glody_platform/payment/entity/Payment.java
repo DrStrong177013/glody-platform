@@ -1,11 +1,14 @@
 package com.glody.glody_platform.payment.entity;
 
 import com.glody.glody_platform.common.BaseEntity;
+import com.glody.glody_platform.payment.enums.PaymentStatus;
 import com.glody.glody_platform.users.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -14,18 +17,18 @@ import lombok.Setter;
 @Setter
 public class Payment extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id", nullable = false)
+    private Invoice invoice;
 
-    private Double amount;
+    private String provider; // e.g., "VNPAY"
+    private String transactionId;
+    private String bankCode;
+    private String cardType;
+    private LocalDateTime paidAt;
 
-    private String method; // VNPAY, PAYPAL, etc.
-
-    private String status; // SUCCESS, FAILED
-
-    private String transactionCode;
-
-    @Column(columnDefinition = "TEXT")
-    private String paymentGatewayResponse;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status; // SUCCESS, FAIL
+    private String responseCode;
+    private String rawResponse; // Full URL callback
 }
