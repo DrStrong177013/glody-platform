@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -70,20 +71,27 @@ public class PaymentViewController {
 
         StringBuilder sb = new StringBuilder();
         for (String key : sortedKeys) {
-            sb.append(key).append("=").append(params.get(key)).append("&");
+            try {
+                String encodedKey = URLEncoder.encode(key, "UTF-8");
+                String encodedValue = URLEncoder.encode(params.get(key), "UTF-8");
+                sb.append(encodedKey).append("=").append(encodedValue).append("&");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("Encoding error", e);
+            }
         }
         if (sb.length() > 0) sb.setLength(sb.length() - 1);
 
         String rawData = sb.toString();
         String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, rawData);
 
-        // ✅ Add to model for debug
+        // ✅ Ghi ra để debug
         model.addAttribute("rawData", rawData);
         model.addAttribute("calculatedHash", calculatedHash);
         model.addAttribute("receivedHash", receivedHash);
 
         return calculatedHash.equals(receivedHash);
     }
+
 
 
 
