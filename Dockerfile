@@ -68,6 +68,8 @@ RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/e
 # If reproducability is important, consider using a specific digest SHA, like
 # eclipse-temurin@sha256:99cede493dfd88720b610eb8077c8688d3cca50003d76d1d539b0efc8cca72b4.
 FROM eclipse-temurin:17-jre-jammy AS final
+ENV TZ=Asia/Ho_Chi_Minh
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 
 # Create a non-privileged user that the app will run under.
