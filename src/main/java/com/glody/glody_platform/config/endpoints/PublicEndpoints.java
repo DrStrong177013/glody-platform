@@ -19,14 +19,9 @@ public class PublicEndpoints {
             "/api/subscription-packages/*",
             "/api/scholarships",
             "/api/scholarships/*",
-
             "/api/countries",
             "/api/countries/*",
-            "/api/payments/history",
-            "/api/payments/invoices",
-            "/api/payments/payment-return",
-            "/api/payment-return",
-            "/api/payments/vnpay-ipn"
+            "/api/payments/*"
 
     };
 
@@ -34,6 +29,5 @@ public class PublicEndpoints {
             "/api/appointments/public",
             "/api/auth/login",
             "/api/users/register",
-            "/api/payments"
     };
 }

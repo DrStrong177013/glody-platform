@@ -24,7 +24,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    @Autowired
     private VnPayService vnPayService;
 
     @GetMapping("/create-payment")
@@ -73,7 +72,10 @@ public class PaymentController {
         for (String key : sortedKeys) {
             sb.append(key).append("=").append(vnpParams.get(key)).append("&");
         }
-        sb.setLength(sb.length() - 1); // remove trailing &
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
+
 
         String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, sb.toString());
 
