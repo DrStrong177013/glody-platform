@@ -30,6 +30,7 @@ import java.util.*;
 public class PaymentViewController {
 
     private final PaymentProcessingService paymentProcessingService;
+    private record ChecksumResult(boolean isValid, String rawData, String calculatedHash) {}
 
     @GetMapping("/payment-return")
     public String handleReturnUrl(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
@@ -41,11 +42,17 @@ public class PaymentViewController {
         String receivedHash = vnpParams.remove("vnp_SecureHash");
         vnpParams.remove("vnp_SecureHashType");
 
-        if (!isValidChecksum(vnpParams, receivedHash)) {
+        ChecksumResult result = validateChecksum(vnpParams, receivedHash);
+
+        if (!result.isValid()) {
             model.addAttribute("statusClass", "fail");
             model.addAttribute("message", "⚠️ Chữ ký không hợp lệ!");
+            model.addAttribute("rawData", result.rawData());
+            model.addAttribute("receivedHash", receivedHash);
+            model.addAttribute("calculatedHash", result.calculatedHash());
             return "payment-result";
         }
+
 
         try {
             paymentProcessingService.processVnPayReturn(vnpParams);
@@ -59,7 +66,7 @@ public class PaymentViewController {
         return "payment-result";
     }
 
-    private boolean isValidChecksum(Map<String, String> params, String receivedHash) {
+    private ChecksumResult validateChecksum(Map<String, String> params, String receivedHash) {
         List<String> sortedKeys = new ArrayList<>(params.keySet());
         Collections.sort(sortedKeys);
 
@@ -69,9 +76,14 @@ public class PaymentViewController {
         }
         if (sb.length() > 0) sb.setLength(sb.length() - 1);
 
-        String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, sb.toString());
-        return calculatedHash.equals(receivedHash);
+        String rawData = sb.toString();
+        String calculatedHash = HMACUtil.hmacSHA512(VnPayConfig.vnp_HashSecret, rawData);
+        boolean isValid = calculatedHash.equals(receivedHash);
+
+        return new ChecksumResult(isValid, rawData, calculatedHash);
     }
+
+
 
 
     private Map<String, String> extractVnpParams(HttpServletRequest request) {

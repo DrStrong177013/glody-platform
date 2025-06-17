@@ -59,5 +59,17 @@
     <p>Mã giao dịch: <strong th:text="${txnRef}">123456</strong></p>
     <a href="/" class="btn-home">Quay lại trang chủ</a>
 </div>
+<div>
+ <pre>
+🔐 <strong>Raw Data:</strong>
+<span th:text="${rawData}"></span>
+
+🔑 <strong>Calculated Hash:</strong>
+<span th:text="${calculatedHash}"></span>
+
+🔑 <strong>Received Hash:</strong>
+<span th:text="${receivedHash}"></span>
+  </pre>
+</div>
 </body>
 </html>
