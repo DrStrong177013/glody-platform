@@ -73,12 +73,14 @@ public class PaymentViewController {
         return calculatedHash.equals(receivedHash);
     }
 
-    private Map<String, String> extractVnpParams(HttpServletRequest request) throws UnsupportedEncodingException {
+
+    private Map<String, String> extractVnpParams(HttpServletRequest request) {
         Map<String, String[]> paramMap = request.getParameterMap();
         Map<String, String> result = new HashMap<>();
         for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
-            result.put(entry.getKey(), URLDecoder.decode(entry.getValue()[0], StandardCharsets.UTF_8));
+            result.put(entry.getKey(), entry.getValue()[0]); // ⚠️ KHÔNG decode
         }
         return result;
     }
+
 }

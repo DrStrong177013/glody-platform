@@ -34,7 +34,7 @@ public class PaymentApiController {
     private final InvoiceService invoiceService;
     private final UserRepository userRepository;
 
-    @PostMapping("/create")
+    @PostMapping("/create-payment")
     public ResponseEntity<Map<String, String>> createPayment(
             @RequestBody CreateInvoiceRequestDto dto,
             Authentication authentication,
