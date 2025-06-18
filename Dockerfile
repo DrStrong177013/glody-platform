@@ -32,12 +32,13 @@ RUN --mount=type=bind,source=pom.xml,target=pom.xml \
 # stage with the correct filename of your package and update the base image of the "final" stage
 # use the relevant app server, e.g., using tomcat (https://hub.docker.com/_/tomcat/) as a base image.
 FROM builder AS package
-
+ENV SSL_KEYSTORE=file:/app/keystore/mykeystore.p12
+ENV SSL_KEYSTORE_PASSWORD=password
 
 WORKDIR /build
 
 COPY ./src src/
-COPY .src/main/resources/keystore.p12 /build/src/main/resources/
+COPY src/main/resources/keystore/keystore.p12 /build/src/main/resources/
 
 RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 \
@@ -92,6 +93,7 @@ COPY --from=extract build/target/extracted/dependencies/ ./
 COPY --from=extract build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract build/target/extracted/application/ ./
+COPY src/main/resources/keystore/keystore.p12 BOOT-INF/classes/keystore/keystore.p12
 
 EXPOSE 9876
 
