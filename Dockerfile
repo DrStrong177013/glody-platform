@@ -37,7 +37,7 @@ FROM builder AS package
 WORKDIR /build
 
 COPY ./src src/
-COPY src/main/resources/keystore.p12 /build/src/main/resources/
+COPY .src/main/resources/keystore.p12 /build/src/main/resources/
 
 RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 \
