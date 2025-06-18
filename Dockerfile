@@ -38,7 +38,7 @@ ENV SSL_KEYSTORE_PASSWORD=password
 WORKDIR /build
 
 COPY ./src src/
-COPY src/main/resources/keystore/keystore.p12 /build/src/main/resources/
+COPY src/main/resources/keystore/keystore.p12 src/main/resources/keystore/keystore.p12
 
 RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 \
@@ -93,7 +93,8 @@ COPY --from=extract build/target/extracted/dependencies/ ./
 COPY --from=extract build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract build/target/extracted/application/ ./
-COPY src/main/resources/keystore/keystore.p12 BOOT-INF/classes/keystore/keystore.p12
+COPY src/main/resources/keystore/keystore.p12 BOOT-INF/classes/keystore/
+
 
 EXPOSE 9876
 
