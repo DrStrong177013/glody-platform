@@ -16,7 +16,7 @@ public class HttpToHttpsRedirectConfig
         httpConnector.setPort(8080);
         httpConnector.setSecure(false);
         // Khi có request HTTP, redirect sang cổng HTTPS 8443
-        httpConnector.setRedirectPort(9876);
+        httpConnector.setRedirectPort(8443);
 
         factory.addAdditionalTomcatConnectors(httpConnector);
     }
