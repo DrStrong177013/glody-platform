@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class User extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(name = "username",nullable = false)
     private String fullName;
 
     @Column(nullable = false, unique = true)
@@ -24,6 +24,8 @@ public class User extends BaseEntity {
     private String passwordHash;
 
     private String phone;
+
+    @Transient
     private String avatarUrl;
 
     private Boolean status = true; // TRUE = active

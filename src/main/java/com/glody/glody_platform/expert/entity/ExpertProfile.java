@@ -17,14 +17,15 @@ import java.util.Set;
 public class ExpertProfile extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "profile_id", nullable = false, unique = true) // Sửa từ user_id thành profile_id
     private User user;
 
     private String bio;
     private String expertise;
+
     private String experience;
     private String avatarUrl;
-
+    @Column(name = "years_of_experience")
     private Integer yearsOfExperience;
 
     @ManyToMany
@@ -35,4 +36,3 @@ public class ExpertProfile extends BaseEntity {
     )
     private Set<Country> advisingCountries = new HashSet<>();
 }
-

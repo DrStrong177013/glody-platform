@@ -17,9 +17,10 @@ import java.time.LocalDateTime;
 @Setter
 public class Payment extends BaseEntity {
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "invoice_id")
     private Invoice invoice;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // 👈 Thêm dòng này
     private User user;

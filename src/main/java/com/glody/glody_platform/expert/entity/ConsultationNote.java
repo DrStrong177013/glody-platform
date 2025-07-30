@@ -17,7 +17,8 @@ public class ConsultationNote extends BaseEntity {
     private Appointment appointment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "expert_id", nullable = false)
+    @JoinColumn(name = "expert_id", referencedColumnName = "id"
+    )
     private User expert;
 
     @Column(columnDefinition = "TEXT")

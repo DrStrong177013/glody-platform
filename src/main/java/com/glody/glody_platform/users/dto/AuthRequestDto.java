@@ -17,12 +17,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthRequestDto {
 
-    @Schema(description = "Email đăng nhập", example = "user@example.com")
+    @Schema(description = "Email đăng nhập", example = "glody.admin@goldyai.com")
     @Email(message = "Email không hợp lệ")
     @NotBlank(message = "Email không được để trống")
     private String email;
 
-    @Schema(description = "Mật khẩu người dùng", example = "123456")
+    @Schema(description = "Mật khẩu người dùng", example = "String_1")
     @NotBlank(message = "Mật khẩu không được để trống")
     private String password;
 }

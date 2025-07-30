@@ -19,12 +19,21 @@ public class UserProfile extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
+    @Column(name = "full_name")
     private String fullName;
+
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+
     private String nationality;
-    private String educationLevel; // Ví dụ: "Thạc Sĩ"
+
+
+    private String educationLevel;
+
+
     private String major;
+
     private String targetCountry;
     private Integer targetYear;
     private String targetSemester; // Ví dụ: "Mùa Thu"
@@ -37,8 +46,8 @@ public class UserProfile extends BaseEntity {
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LanguageCertificate> languageCertificates = new ArrayList<>();
-
+@Column(name = "second_language_certificate")
     private String secondLanguageCertificate;
-
+@Column(name = "extracurricular_activities")
     private String extracurricularActivities;
 }

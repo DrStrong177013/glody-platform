@@ -10,8 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,40 +22,44 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // since we’re a pure JSON/JWT API
                 .csrf(csrf -> csrf.disable())
-                .requiresChannel(channel -> channel
-                        .anyRequest().requiresSecure()
-                )
-                .authorizeHttpRequests(auth -> auth
 
-                        // === PUBLIC ===
+                // require HTTPS everywhere
+                .requiresChannel(channel -> channel.anyRequest().requiresSecure())
+
+                // stateless session (no HttpSession)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // hook in your JWT filter
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // authorization rules
+                .authorizeHttpRequests(auth -> auth
+                        // 1) explicitly permit your auth URLs
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // 2) public GET/POST (if you have other public);
+                        //    you can still keep your existing arrays here
                         .requestMatchers(HttpMethod.GET, PublicEndpoints.GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, PublicEndpoints.POST_ENDPOINTS).permitAll()
 
-                        // === AUTHENTICATED ===
-                        .requestMatchers(AuthenticatedEndpoints.ALL_ENDPOINTS).authenticated()
-
-                        // === STUDENT ===
+                        // 3) role-based
                         .requestMatchers(StudentEndpoints.ALL_ENDPOINTS).hasRole("STUDENT")
-
-                        // === EXPERT ===
                         .requestMatchers(ExpertEndpoints.ALL_ENDPOINTS).hasRole("EXPERT")
-
-                        // === ADMIN ===
                         .requestMatchers(AdminEndpoints.ALL_ENDPOINTS).hasRole("ADMIN")
 
-                        // === DEFAULT ===
+                        // 4) everything else needs authentication
                         .anyRequest().authenticated()
-                )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg)
+            throws Exception {
+        return cfg.getAuthenticationManager();
     }
 
 

@@ -8,7 +8,8 @@ public class AuthenticatedEndpoints {
             "/api/users/me/roles",
             "/api/feedbacks",
             "/api/invoices",
-            "/api/invoices/**"
+            "/api/invoices/**",
+
 
     };
 }

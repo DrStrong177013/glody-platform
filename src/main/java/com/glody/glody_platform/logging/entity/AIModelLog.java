@@ -23,10 +23,10 @@ public class AIModelLog {
 
     private String modelName;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "input_prompt" ,columnDefinition = "TEXT")
     private String input;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "output_text", columnDefinition = "TEXT")
     private String output;
 
     private LocalDateTime createdAt = LocalDateTime.now();

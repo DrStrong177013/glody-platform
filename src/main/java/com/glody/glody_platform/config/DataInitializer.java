@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class DataInitializer {
 
@@ -26,8 +26,8 @@ public class DataInitializer {
 
     @PostConstruct
     public void initDefaults() {
-        initRoles();
-        initSubscriptionPackages();
+//        initRoles();
+//        initSubscriptionPackages();
         initAdminUser();
     }
 
@@ -100,7 +100,7 @@ public class DataInitializer {
                 User admin = new User();
                 admin.setFullName("Super Admin");
                 admin.setEmail("admin@glody.com");
-                admin.setPasswordHash(passwordEncoder.encode("admin123")); // Sử dụng PasswordEncoder
+                admin.setPasswordHash(passwordEncoder.encode("String_1")); // Sử dụng PasswordEncoder
                 admin.setPhone("0123456789");
                 admin.setAvatarUrl(null);
                 admin.setStatus(true);

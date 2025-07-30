@@ -71,13 +71,9 @@ public class PaymentViewController {
 
         StringBuilder sb = new StringBuilder();
         for (String key : sortedKeys) {
-            try {
-                String encodedKey = URLEncoder.encode(key, "UTF-8");
-                String encodedValue = URLEncoder.encode(params.get(key), "UTF-8");
-                sb.append(encodedKey).append("=").append(encodedValue).append("&");
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("Encoding error", e);
-            }
+            String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8);
+            String encodedValue = URLEncoder.encode(params.get(key), StandardCharsets.UTF_8);
+            sb.append(encodedKey).append("=").append(encodedValue).append("&");
         }
         if (sb.length() > 0) sb.setLength(sb.length() - 1);
 

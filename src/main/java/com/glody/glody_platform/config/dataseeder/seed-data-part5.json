@@ -1,0 +1,139 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "category_id": 4,
+      "country_id": 1,
+      "title": "5 Tips to Secure Your Australian Student Visa",
+      "slug": "5-tips-secure-your-australian-student-visa",
+      "excerpt": "Learn the most important steps and deadlines to make your Australian student visa application smooth and successful.",
+      "content": "Applying for an Australian student visa can be daunting. In this post, we'll walk you through the five most crucial steps…",
+      "published_at": "2025-07-05T09:00:00+07:00",
+      "created_at": "2025-07-05T09:00:00+07:00",
+      "updated_at": "2025-07-05T09:00:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "category_id": 2,
+      "country_id": 2,
+      "title": "Top 10 Universities in Germany for Engineering",
+      "slug": "top-10-universities-in-germany-for-engineering",
+      "excerpt": "A roundup of the best German technical universities offering cutting-edge engineering programs.",
+      "content": "Germany is home to world-class engineering schools. Here are the top 10 you should consider…",
+      "published_at": "2025-07-05T10:30:00+07:00",
+      "created_at": "2025-07-05T10:30:00+07:00",
+      "updated_at": "2025-07-05T10:30:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "user_id": 2,
+      "category_id": 3,
+      "country_id": 3,
+      "title": "Scholarship Opportunities in Canada You Can’t Miss",
+      "slug": "scholarship-opportunities-in-canada-you-cant-miss",
+      "excerpt": "From government grants to university awards, discover the top scholarships for international students in Canada.",
+      "content": "Funding your studies in Canada is easier than you think. In this guide, we explore the best scholarships available…",
+      "published_at": "2025-07-05T11:15:00+07:00",
+      "created_at": "2025-07-05T11:15:00+07:00",
+      "updated_at": "2025-07-05T11:15:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 4,
+      "user_id": 5,
+      "category_id": 2,
+      "country_id": 4,
+      "title": "Campus Life at MIT: What to Expect",
+      "slug": "campus-life-at-mit-what-to-expect",
+      "excerpt": "A firsthand look at student life, clubs, and facilities at MIT’s historic campus in Cambridge, USA.",
+      "content": "MIT offers a vibrant campus environment. From hackathons to cutting-edge labs…",
+      "published_at": "2025-07-05T13:00:00+07:00",
+      "created_at": "2025-07-05T13:00:00+07:00",
+      "updated_at": "2025-07-05T13:00:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 5,
+      "user_id": 3,
+      "category_id": 1,
+      "country_id": 4,
+      "title": "Maximizing Your Study Abroad Application Success",
+      "slug": "maximizing-your-study-abroad-application-success",
+      "excerpt": "Key strategies to improve your application and stand out to admissions committees around the world.",
+      "content": "Whether you’re applying to the UK, US, or Canada, a strong application requires…",
+      "published_at": "2025-07-05T14:45:00+07:00",
+      "created_at": "2025-07-05T14:45:00+07:00",
+      "updated_at": "2025-07-05T14:45:00+07:00",
+      "is_active": true
+    }
+  ],
+
+  "post_tags": [
+    { "id": 1, "post_id": 1, "tag_id": 2, "created_at": "2025-07-05T09:00:00+07:00", "updated_at": "2025-07-05T09:00:00+07:00", "is_active": true },
+    { "id": 2, "post_id": 1, "tag_id": 4, "created_at": "2025-07-05T09:00:00+07:00", "updated_at": "2025-07-05T09:00:00+07:00", "is_active": true },
+    { "id": 3, "post_id": 2, "tag_id": 5, "created_at": "2025-07-05T10:30:00+07:00", "updated_at": "2025-07-05T10:30:00+07:00", "is_active": true },
+    { "id": 4, "post_id": 2, "tag_id": 3, "created_at": "2025-07-05T10:30:00+07:00", "updated_at": "2025-07-05T10:30:00+07:00", "is_active": true },
+    { "id": 5, "post_id": 3, "tag_id": 1, "created_at": "2025-07-05T11:15:00+07:00", "updated_at": "2025-07-05T11:15:00+07:00", "is_active": true },
+    { "id": 6, "post_id": 3, "tag_id": 3, "created_at": "2025-07-05T11:15:00+07:00", "updated_at": "2025-07-05T11:15:00+07:00", "is_active": true },
+    { "id": 7, "post_id": 4, "tag_id": 5, "created_at": "2025-07-05T13:00:00+07:00", "updated_at": "2025-07-05T13:00:00+07:00", "is_active": true },
+    { "id": 8, "post_id": 5, "tag_id": 3, "created_at": "2025-07-05T14:45:00+07:00", "updated_at": "2025-07-05T14:45:00+07:00", "is_active": true },
+    { "id": 9, "post_id": 5, "tag_id": 1, "created_at": "2025-07-05T14:45:00+07:00", "updated_at": "2025-07-05T14:45:00+07:00", "is_active": true }
+  ],
+
+  "comments": [
+    {
+      "id": 1,
+      "post_id": 1,
+      "user_id": 2,
+      "parent_id": null,
+      "content": "Thanks for these tips, Alice! Very helpful.",
+      "created_at": "2025-07-06T10:00:00+07:00",
+      "updated_at": "2025-07-06T10:00:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "post_id": 1,
+      "user_id": 5,
+      "parent_id": null,
+      "content": "Can you elaborate on the timeline for submissions?",
+      "created_at": "2025-07-06T10:15:00+07:00",
+      "updated_at": "2025-07-06T10:15:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "post_id": 1,
+      "user_id": 1,
+      "parent_id": 2,
+      "content": "Sure — most applications need to be in at least 3 months before the semester starts.",
+      "created_at": "2025-07-06T10:20:00+07:00",
+      "updated_at": "2025-07-06T10:20:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 4,
+      "post_id": 2,
+      "user_id": 3,
+      "parent_id": null,
+      "content": "Great list! Would you recommend any for renewable energy?",
+      "created_at": "2025-07-06T11:00:00+07:00",
+      "updated_at": "2025-07-06T11:00:00+07:00",
+      "is_active": true
+    },
+    {
+      "id": 5,
+      "post_id": 3,
+      "user_id": 1,
+      "parent_id": null,
+      "content": "Are these scholarships open to part-time students?",
+      "created_at": "2025-07-06T11:30:00+07:00",
+      "updated_at": "2025-07-06T11:30:00+07:00",
+      "is_active": true
+    }
+  ]
+}

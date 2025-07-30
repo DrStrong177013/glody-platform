@@ -14,6 +14,21 @@ public class AdminEndpoints {
             "/api/schools/admin/**",
             "/api/scholarships/admin/**",
             "/api/subscription-packages/**",
-            "/api/tags/**"
+            "/api/tags/**",
+
+
+            // All Expert Endpoints
+            "/api/expert-profiles/**",
+            "/api/appointments/expert/**",
+            "/api/consultation-notes/**",
+
+            // All Student Endpoints
+            "/api/language-certificates/**",
+            "/api/appointments",
+            "/api/appointments/user/**",
+            "/api/user-profiles/**",
+            "/api/matching-history",
+            "/api/programs/matching",
+            "/api/scholarships/matching"
     };
 }

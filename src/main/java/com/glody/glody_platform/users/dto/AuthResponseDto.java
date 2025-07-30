@@ -23,4 +23,6 @@ public class AuthResponseDto {
 
     @Schema(description = "Tên đầy đủ của người dùng", example = "Người Dùng Thử")
     private String fullName;
+
+
 }

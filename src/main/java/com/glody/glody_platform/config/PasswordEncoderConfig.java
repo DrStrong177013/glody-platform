@@ -10,6 +10,8 @@ public class PasswordEncoderConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Có thể set strength nếu muốn (mặc định 10)
+        // Đảm bảo sử dụng BCryptPasswordEncoder nguyên bản từ Spring Security
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(12);
     }
+
 }
