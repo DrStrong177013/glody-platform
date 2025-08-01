@@ -46,19 +46,19 @@ public class ProgramController {
     }
 
     @PostMapping("/admin")
-    @Operation(summary = "Tạo chương trình mới")
+    @Operation(summary = "Tạo chương trình mới (Admin)")
     public ProgramDetailDto create(@RequestParam Long schoolId, @RequestBody ProgramRequestDto dto) {
         return programService.create(schoolId, dto);
     }
 
     @PutMapping("/admin/{id}")
-    @Operation(summary = "Cập nhật chương trình")
+    @Operation(summary = "Cập nhật chương trình (Admin)")
     public ProgramDetailDto update(@PathVariable Long id, @RequestBody ProgramRequestDto dto) {
         return programService.update(id, dto);
     }
 
     @DeleteMapping("/admin/{id}")
-    @Operation(summary = "Xoá mềm chương trình")
+    @Operation(summary = "Xoá mềm chương trình (Admin)")
     public String delete(@PathVariable Long id) {
         programService.delete(id);
         return "Deleted";

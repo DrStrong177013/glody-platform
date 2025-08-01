@@ -22,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/scholarships")
 @RequiredArgsConstructor
-@Tag(name = "Scholarship Matching", description = "Gợi ý học bổng phù hợp với hồ sơ người dùng (chỉ áp dụng với gói PREMIUM)")
+@Tag(name = "Scholarship Matching", description = "Đang sửa")
 public class ScholarshipMatchingController {
 
     private final ScholarshipMatchingService matchingService;

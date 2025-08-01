@@ -11,7 +11,7 @@ public class CategoryResponseDto {
     @Schema(example = "1")
     private Long id;
 
-    @Schema(example = "Học Bổng")
+    @Schema(example = "Chia sẻ")
     private String name;
 
     @Schema(example = "2025-05-30T10:00:00")

@@ -42,19 +42,19 @@ public class ScholarshipController {
         return scholarshipService.getById(id);
     }
 
-    @Operation(summary = "Admin tạo học bổng")
+    @Operation(summary = "Tạo học bổng (Admin)")
     @PostMapping("/admin")
     public ScholarshipResponseDto create(@RequestBody ScholarshipRequestDto dto) {
         return scholarshipService.create(dto);
     }
 
-    @Operation(summary = "Admin cập nhật học bổng")
+    @Operation(summary = "Cập nhật học bổng (Admin)")
     @PutMapping("/admin/{id}")
     public ScholarshipResponseDto update(@PathVariable Long id, @RequestBody ScholarshipRequestDto dto) {
         return scholarshipService.update(id, dto);
     }
 
-    @Operation(summary = "Admin xoá mềm học bổng")
+    @Operation(summary = "Xoá học bổng (Admin)")
     @DeleteMapping("/admin/{id}")
     public void delete(@PathVariable Long id) {
         scholarshipService.delete(id);

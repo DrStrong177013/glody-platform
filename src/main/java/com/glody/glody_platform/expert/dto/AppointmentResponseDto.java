@@ -25,4 +25,6 @@ public class AppointmentResponseDto {
 
     @Schema(description = "Tên chuyên gia nhận lịch", example = "Trần Đức Anh")
     private String expertFullName;
+
+    private boolean IsAnonymous;
 }

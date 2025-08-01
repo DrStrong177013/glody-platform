@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class User extends BaseEntity {
 
-    @Column(name = "username",nullable = false)
+    @Column(nullable = false)
     private String fullName;
 
     @Column(nullable = false, unique = true)

@@ -3,17 +3,29 @@ package com.glody.glody_platform.blog.controller;
 import com.glody.glody_platform.blog.dto.CommentRequestDto;
 import com.glody.glody_platform.blog.dto.CommentResponseDto;
 import com.glody.glody_platform.blog.service.CommentService;
+import com.glody.glody_platform.users.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.io.Console;
+import java.util.stream.Collectors;
 
 /**
  * REST Controller xử lý các chức năng liên quan đến bình luận bài viết.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/comments")
 @RequiredArgsConstructor
@@ -29,10 +41,11 @@ public class CommentController {
      * @param dto Dữ liệu bình luận
      * @return Phản hồi thành công
      */
-    @Operation(summary = "Thêm bình luận vào bài viết (truyền parentId nếu là trả lời một bình luận)")
+    @Operation(summary = "Thêm bình luận vào bài viết, truyền parentId nếu là trả lời một bình luận (Auth)")
     @PostMapping
-    public ResponseEntity<String> addComment(@RequestBody CommentRequestDto dto) {
-        commentService.addComment(dto);
+    public ResponseEntity<String> addComment(@AuthenticationPrincipal User currentUser, @RequestBody CommentRequestDto dto) {
+        long currentUserId = currentUser.getId();
+        commentService.addComment(currentUserId,dto);
         return ResponseEntity.ok("✅ Bình luận đã được thêm!");
     }
 
@@ -61,10 +74,38 @@ public class CommentController {
      * @param commentId ID bình luận
      * @return Phản hồi xoá thành công
      */
-    @Operation(summary = "Xoá mềm bình luận (không xoá khỏi DB)")
+    @Operation(summary = "Xoá mềm bình luận (Auth). Nếu là Admin thì có quyền xóa bình luận của người khác")
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
-        commentService.softDelete(commentId);
+    public ResponseEntity<String> deleteComment(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Long commentId
+    ) {
+        long userId = currentUser.getId();
+
+        // Lấy Authentication từ SecurityContext
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Lấy danh sách authority strings (e.g. "ROLE_USER", "ROLE_ADMIN")
+        String authorities = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        // Log thông tin user và authorities
+        log.info("User ID={} attempts to delete comment {} with authorities=[{}]",
+                userId, commentId, authorities);
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_ADMIN"::equals);
+
+        if (isAdmin) {
+            commentService.softDeleteByAdmin(commentId);
+            log.debug("Admin user ID={} soft-deleted comment {}", userId, commentId);
+        } else {
+            commentService.softDelete(userId, commentId);
+            log.debug("User ID={} soft-deleted own comment {}", userId, commentId);
+        }
+
         return ResponseEntity.ok("🗑️ Đã xoá bình luận.");
     }
 }

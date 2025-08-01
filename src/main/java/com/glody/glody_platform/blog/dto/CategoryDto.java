@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class CategoryDto {
 
-    @Schema(description = "Tên chuyên mục", example = "Học bổng")
+    @Schema(description = "Tên chuyên mục", example = "Chia sẻ")
     private String name;
 
-    @Schema(description = "Slug dùng cho URL", example = "hoc-bong")
+    @Schema(description = "Slug dùng cho URL", example = "chia-se")
     private String slug;
 }

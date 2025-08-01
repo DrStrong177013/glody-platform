@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Schema(description = "Thông tin phản hồi khi gửi hoặc nhận tin nhắn")
 public class ChatResponseDto {
 
-    @Schema(description = "ID tin nhắn", example = "123")
+    @Schema(description = "ID tin nhắn", example = "6")
     private Long id;
 
     @Schema(description = "Nội dung tin nhắn", example = "Em cần tư vấn về du học Đài Loan")

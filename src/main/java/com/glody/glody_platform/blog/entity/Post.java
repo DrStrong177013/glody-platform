@@ -17,9 +17,6 @@ import java.util.Set;
 @Setter
 public class Post extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)  // Thêm mapping user
-    private User user;
 
     @Column(nullable = false)
     private String title;
@@ -38,8 +35,6 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private Boolean published = false;
 
-    @Column(name = "published_at")
-    private LocalDateTime publishedAt;
 
     @Column(name = "publish_date")
     private LocalDateTime publishDate;

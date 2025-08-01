@@ -7,8 +7,11 @@ import com.glody.glody_platform.payment.enums.PaymentStatus;
 import com.glody.glody_platform.payment.repository.InvoiceRepository;
 import com.glody.glody_platform.payment.repository.PaymentRepository;
 import com.glody.glody_platform.users.dto.UserSubscriptionRequestDto;
+import com.glody.glody_platform.users.entity.User;
+import com.glody.glody_platform.users.repository.UserRepository;
 import com.glody.glody_platform.users.service.UserSubscriptionService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ public class PaymentProcessingService {
     private final InvoiceRepository invoiceRepository;
     private final PaymentRepository paymentRepository;
     private final UserSubscriptionService userSubscriptionService;
+    private final UserRepository userRepository;
 
     @Transactional
     public void processVnPayReturn(Map<String, String> params) {
@@ -38,13 +42,13 @@ public class PaymentProcessingService {
             return;
         }
 
+
         invoice.setStatus(InvoiceStatus.PAID);
         invoice.setPaidAt(LocalDateTime.now());
         invoiceRepository.save(invoice);
 
         Payment payment = new Payment();
         payment.setInvoice(invoice);
-        payment.setUser(invoice.getUser());
         payment.setTransactionId(params.get("vnp_TransactionNo"));
         payment.setBankCode(params.get("vnp_BankCode"));
         payment.setCardType(params.get("vnp_CardType"));

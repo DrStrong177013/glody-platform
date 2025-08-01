@@ -5,6 +5,7 @@ import com.glody.glody_platform.expert.dto.ExpertProfileUpdateDto;
 import com.glody.glody_platform.expert.service.ExpertProfileService;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST Controller xử lý thao tác với hồ sơ chuyên gia (expert profile).
  */
+@Hidden
 @RestController
 @RequestMapping("/api/expert-profiles")
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class ExpertProfileController {
         return user.getId();
     }
 
-    @Operation(summary = "Lấy thông tin hồ sơ chuyên gia của chính mình")
+    @Operation(summary = "Lấy thông tin hồ sơ chuyên gia của chính mình (Expert)")
     @GetMapping("/me")
     public ResponseEntity<ExpertProfileDto> getExpertProfile(Authentication authentication) {
         Long userId = getUserIdFromAuth(authentication);
@@ -39,7 +41,7 @@ public class ExpertProfileController {
         return ResponseEntity.ok(dto);
     }
 
-    @Operation(summary = "Cập nhật thông tin hồ sơ chuyên gia của chính mình")
+    @Operation(summary = "Cập nhật thông tin hồ sơ chuyên gia của chính mình (Expert)")
     @PutMapping("/me")
     public ResponseEntity<String> updateExpertProfile(
             Authentication authentication,

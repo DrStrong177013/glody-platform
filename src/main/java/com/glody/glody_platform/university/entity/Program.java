@@ -20,7 +20,7 @@ public class Program extends BaseEntity {
     private School school;
 
     @Enumerated(EnumType.STRING)
-    private DegreeLevel level; // CỬ NHÂN, THẠC_SĨ, TIẾN_SĨ
+    private DegreeLevel level;
 
     @Enumerated(EnumType.STRING)
     private LanguageType language; // ENGLISH, CHINESE

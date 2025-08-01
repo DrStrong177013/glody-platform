@@ -8,9 +8,6 @@ public class CommentRequestDto {
     @Schema(description = "ID bài viết", example = "12")
     private Long postId;
 
-    @Schema(description = "ID người dùng", example = "1")
-    private Long userId;
-
     @Schema(description = "Nội dung bình luận", example = "Bài viết rất hay!")
     private String content;
 

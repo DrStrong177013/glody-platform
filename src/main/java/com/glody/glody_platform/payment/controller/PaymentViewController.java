@@ -11,6 +11,7 @@ import com.glody.glody_platform.payment.service.PaymentProcessingService;
 import com.glody.glody_platform.payment.utils.HMACUtil;
 import com.glody.glody_platform.users.dto.UserSubscriptionRequestDto;
 import com.glody.glody_platform.users.service.UserSubscriptionService;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
-
+@Hidden
 @Controller
 @RequestMapping("/api")
 @RequiredArgsConstructor

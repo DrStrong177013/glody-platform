@@ -20,26 +20,27 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+
     @Operation(summary = "Lấy danh sách category chưa bị xoá")
     @GetMapping
     public List<Category> getAll() {
         return categoryService.getAll();
     }
 
-    @Operation(summary = "Tạo chuyên mục mới")
+    @Operation(summary = "Tạo chuyên mục mới (Admin)")
     @PostMapping
     public CategoryResponseDto create(@RequestBody @Parameter(description = "Thông tin chuyên mục") CategoryRequestDto dto) {
         return categoryService.create(dto);
     }
 
-    @Operation(summary = "Cập nhật thông tin chuyên mục")
+    @Operation(summary = "Cập nhật thông tin chuyên mục (Admin)")
     @PutMapping("/{id}")
     public CategoryResponseDto update(@PathVariable Long id,
                                       @RequestBody @Parameter(description = "Thông tin cần cập nhật") CategoryRequestDto dto) {
         return categoryService.update(id, dto);
     }
 
-    @Operation(summary = "Xoá mềm chuyên mục")
+    @Operation(summary = "Xoá mềm chuyên mục (Admin)")
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         categoryService.delete(id);

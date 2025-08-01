@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Data
 public class AppointmentRequestDto {
 
-    @Schema(description = "ID của người dùng đặt lịch", example = "7")
-    private Long userId;
-
-    @Schema(description = "ID của chuyên gia nhận lịch", example = "12")
+    @Schema(description = "ID của chuyên gia nhận lịch", example = "2")
     private Long expertId;
 
     @Schema(description = "Thời gian cuộc hẹn (yyyy-MM-ddTHH:mm:ss)", example = "2025-06-01T10:00:00")

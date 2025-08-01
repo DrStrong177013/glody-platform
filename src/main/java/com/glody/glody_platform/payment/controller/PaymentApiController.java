@@ -9,6 +9,7 @@ import com.glody.glody_platform.payment.service.VnPayService;
 import com.glody.glody_platform.payment.utils.HMACUtil;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-
+@Hidden
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor

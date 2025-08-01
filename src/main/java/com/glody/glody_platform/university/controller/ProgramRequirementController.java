@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/program-requirements")
 @RequiredArgsConstructor
-@Tag(name = "Program Requirement Controller", description = "Yêu cầu hồ sơ cho chương trình học")
+@Tag(name = "Program Requirement Controller", description = "Đang sửa")
 public class ProgramRequirementController {
 
     private final ProgramRequirementService service;

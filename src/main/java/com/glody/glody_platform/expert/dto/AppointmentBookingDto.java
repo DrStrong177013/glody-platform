@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Data
 public class AppointmentBookingDto {
 
-    @Schema(description = "Họ tên người đặt lịch", example = "Nguyễn Văn A")
+    @Schema(description = "Họ tên người đặt lịch", example = "Nguyễn Văn Tiến")
     private String fullName;
 
-    @Schema(description = "Email liên hệ", example = "nguyenvana@gmail.com")
+    @Schema(description = "Email liên hệ", example = "nguyenvantien@gmail.com")
     private String email;
 
     @Schema(description = "Số điện thoại", example = "0912345678")
     private String phone;
 
-    @Schema(description = "ID của chuyên gia nhận lịch", example = "12")
+    @Schema(description = "ID của chuyên gia nhận lịch(Bob)", example = "2")
     private Long expertId;
 
-    @Schema(description = "Thời gian cuộc hẹn (yyyy-MM-ddTHH:mm:ss)", example = "2025-06-01T14:00:00")
+    @Schema(description = "Thời gian cuộc hẹn (yyyy-MM-ddTHH:mm:ss)", example = "2025-09-01T14:00:00")
     private LocalDateTime appointmentDateTime;
 }

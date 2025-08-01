@@ -1,3 +1,4 @@
+// ExpertProfileService.java
 package com.glody.glody_platform.expert.service;
 
 import com.glody.glody_platform.catalog.entity.Country;
@@ -6,12 +7,10 @@ import com.glody.glody_platform.expert.dto.ExpertProfileDto;
 import com.glody.glody_platform.expert.dto.ExpertProfileUpdateDto;
 import com.glody.glody_platform.expert.entity.ExpertProfile;
 import com.glody.glody_platform.expert.repository.ExpertProfileRepository;
-import com.glody.glody_platform.users.entity.User;
-import com.glody.glody_platform.users.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashSet;
@@ -22,65 +21,74 @@ import java.util.List;
 public class ExpertProfileService {
 
     private final ExpertProfileRepository expertRepo;
-    private final UserRepository userRepo;
     private final CountryRepository countryRepo;
 
+    /**
+     * Lấy profile của expert theo userId.
+     * @throws 404 nếu không tìm thấy expert_profiles.user_id = userId
+     */
+    @Transactional(readOnly = true)
+    public ExpertProfileDto getExpertProfileByUserId(Long userId) {
+        ExpertProfile profile = expertRepo.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Expert profile not found for userId=" + userId));
+
+        return toDto(profile);
+    }
+
+    /**
+     * Cập nhật thông tin chuyên gia và user.fullName.
+     * Nếu dto.fullName không null thì update tên trên User.
+     */
     @Transactional
     public void updateExpertProfile(Long userId, ExpertProfileUpdateDto dto) {
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        ExpertProfile profile = expertRepo.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Expert profile not found for userId=" + userId));
 
-        ExpertProfile profile = expertRepo.findByUser(user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Expert profile not found"));
+        // --- 1) Update User.fullName nếu có ---
+        if (dto.getFullName() != null && !dto.getFullName().isBlank()) {
+            profile.getUser().setFullName(dto.getFullName());
+        }
 
-        // Cập nhật user cơ bản
-        user.setFullName(dto.getFullName());
-        profile.setAvatarUrl(dto.getAvatarUrl());
-        // Cập nhật expert profile
+        // --- 2) Update avatarUrl nếu có ---
+        if (dto.getAvatarUrl() != null) {
+            profile.setAvatarUrl(dto.getAvatarUrl());
+        }
+
+        // --- 3) Các trường khác ---
         profile.setBio(dto.getBio());
         profile.setExpertise(dto.getExpertise());
         profile.setExperience(dto.getExperience());
         profile.setYearsOfExperience(dto.getYearsOfExperience());
 
-        // Cập nhật danh sách quốc gia tư vấn
-        if (dto.getCountryIds() != null) {
-            List<Country> countries = countryRepo.findAllById(dto.getCountryIds());
-            profile.setAdvisingCountries(new HashSet<>(countries));
-        }
+        // --- 4) Update advisingCountries nếu client truyền lên ---
+//        if (dto.getCountryIds() != null) {
+//            List<Country> countries = countryRepo.findAllById(dto.getCountryIds());
+//            profile.setAdvisingCountries(new HashSet<>(countries));
+//        }
 
-        expertRepo.save(profile);
+        // @Transactional sẽ tự động flush cả profile và user
     }
 
-    public ExpertProfileDto getExpertProfileByUserId(Long userId) {
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        ExpertProfile expertProfile = expertRepo.findByUser(user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Expert profile not found"));
-
-        return mapToDto(expertProfile);
-    }
-
-    private ExpertProfileDto mapToDto(ExpertProfile profile) {
-        User user = profile.getUser();
-
+    /**
+     * Chuyển ExpertProfile entity → ExpertProfileDto
+     */
+    private ExpertProfileDto toDto(ExpertProfile profile) {
         ExpertProfileDto dto = new ExpertProfileDto();
-        user.setAvatarUrl(profile.getAvatarUrl());
-        dto.setUserId(user.getId());
-        dto.setFullName(user.getFullName());
+        dto.setUserId(profile.getUser().getId());
+        dto.setFullName(profile.getUser().getFullName());
+        dto.setEmail(profile.getUser().getEmail());
         dto.setAvatarUrl(profile.getAvatarUrl());
-        dto.setEmail(user.getEmail());
-
         dto.setBio(profile.getBio());
         dto.setExpertise(profile.getExpertise());
         dto.setExperience(profile.getExperience());
         dto.setYearsOfExperience(profile.getYearsOfExperience());
-
-        dto.setCountryNames(
-                profile.getAdvisingCountries().stream().map(Country::getName).toList()
-        );
-
+//        dto.setCountryNames(
+//                profile.getAdvisingCountries().stream()
+//                        .map(Country::getName)
+//                        .toList()
+//        );
         return dto;
     }
-
 }

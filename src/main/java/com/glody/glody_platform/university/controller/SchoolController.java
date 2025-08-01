@@ -43,20 +43,20 @@ public class SchoolController {
         return schoolService.getSchoolById(id);
     }
 
-    @Operation(summary = "Admin tạo mới trường học")
+    @Operation(summary = "Tạo mới trường học (Admin)")
     @PostMapping("/admin")
     public SchoolResponseDto create(@RequestBody SchoolRequestDto dto) {
         return schoolService.createSchool(dto);
     }
 
-    @Operation(summary = "Admin cập nhật thông tin trường học")
+    @Operation(summary = "Cập nhật thông tin trường học (Admin)")
     @PutMapping("/admin/{id}")
     public SchoolResponseDto update(@PathVariable Long id,
                                     @RequestBody SchoolRequestDto dto) {
         return schoolService.updateSchool(id, dto);
     }
 
-    @Operation(summary = "Xoá mềm trường học")
+    @Operation(summary = "Xoá mềm trường học (Admin)")
     @DeleteMapping("/admin/{id}")
     public String delete(@PathVariable Long id) {
         schoolService.softDelete(id);

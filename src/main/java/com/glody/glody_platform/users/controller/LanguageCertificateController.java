@@ -4,14 +4,13 @@ import com.glody.glody_platform.users.dto.LanguageCertificateRequest;
 import com.glody.glody_platform.users.dto.LanguageCertificateResponse;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.repository.UserProfileRepository;
-import com.glody.glody_platform.users.repository.UserRepository;
 import com.glody.glody_platform.users.service.LanguageCertificateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,48 +22,51 @@ import java.util.List;
 public class LanguageCertificateController {
 
     private final LanguageCertificateService certificateService;
-    private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
 
-    private Long getProfileIdFromAuth(Authentication authentication) {
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+    @Operation(summary = "Lấy danh sách chứng chỉ của người dùng hiện tại (Student)")
+    @GetMapping
+    public ResponseEntity<List<LanguageCertificateResponse>> getCertificates(
+            @AuthenticationPrincipal User currentUser) {
 
-        return userProfileRepository.findByUserId(user.getId())
+        Long profileId = userProfileRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ người dùng"))
                 .getId();
-    }
 
-    @Operation(summary = "Lấy danh sách chứng chỉ của người dùng hiện tại")
-    @GetMapping
-    public ResponseEntity<List<LanguageCertificateResponse>> getCertificates(Authentication authentication) {
-        Long profileId = getProfileIdFromAuth(authentication);
-        List<LanguageCertificateResponse> certificates = certificateService.getCertificates(profileId);
+        List<LanguageCertificateResponse> certificates =
+                certificateService.getCertificates(profileId);
         return ResponseEntity.ok(certificates);
     }
 
-    @Operation(summary = "Thêm chứng chỉ ngôn ngữ vào hồ sơ người dùng hiện tại")
+    @Operation(summary = "Thêm chứng chỉ ngôn ngữ vào hồ sơ người dùng hiện tại (Student)")
     @PostMapping
     public ResponseEntity<String> addCertificate(
-            Authentication authentication,
+            @AuthenticationPrincipal User currentUser,
             @Valid @RequestBody LanguageCertificateRequest request) {
 
-        Long profileId = getProfileIdFromAuth(authentication);
+        Long profileId = userProfileRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ người dùng"))
+                .getId();
+
         certificateService.addCertificate(profileId, request);
         return ResponseEntity.ok("📄 Chứng chỉ đã được thêm.");
     }
 
-    @Operation(summary = "Xoá chứng chỉ ngôn ngữ theo ID")
+    @Operation(summary = "Xoá chứng chỉ ngôn ngữ theo ID (Student)")
     @DeleteMapping("/{certificateId}")
-    public ResponseEntity<String> deleteCertificate(@PathVariable Long certificateId) {
+    public ResponseEntity<String> deleteCertificate(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Long certificateId) {
+
+        // nếu cần: kiểm tra certificateId có thuộc về profileId của currentUser
         certificateService.deleteCertificate(certificateId);
         return ResponseEntity.ok("🗑️ Chứng chỉ đã bị xoá.");
     }
 
-    @Operation(summary = "Cập nhật thông tin chứng chỉ ngôn ngữ")
+    @Operation(summary = "Cập nhật thông tin chứng chỉ ngôn ngữ (Student)")
     @PutMapping("/{certificateId}")
     public ResponseEntity<String> updateCertificate(
+            @AuthenticationPrincipal User currentUser,
             @PathVariable Long certificateId,
             @Valid @RequestBody LanguageCertificateRequest request) {
 

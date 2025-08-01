@@ -9,6 +9,7 @@ public class PublicEndpoints {
             "/swagger-ui.html",
             "/api/posts",
             "/api/posts/slug/*/view",
+            "/api/comments/post/*",
             "/api/programs",
             "/api/programs/*",
             "/api/schools",
@@ -24,12 +25,13 @@ public class PublicEndpoints {
             "/api/payment-return",
             "/api/create-payment",
             "/api/vnpay-ipn",
+            "/api/tags",
 
     };
 
     public static final String[] POST_ENDPOINTS = {
             "/api/appointments/public",
             "/api/auth/login",
-            "/api/users/register",
+//            "/api/users/register",
     };
 }

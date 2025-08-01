@@ -62,7 +62,7 @@ public class PostController {
     /**
      * Admin tạo mới bài viết.
      */
-    @Operation(summary = "Admin tạo bài viết mới")
+    @Operation(summary = "Tạo bài viết mới (Admin)")
     @PostMapping("/admin")
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto dto) {
         return ResponseEntity.ok(postService.createOrUpdatePost(null, dto));
@@ -71,7 +71,7 @@ public class PostController {
     /**
      * Admin cập nhật bài viết theo ID.
      */
-    @Operation(summary = "Admin cập nhật bài viết")
+    @Operation(summary = "Admin cập nhật bài viết (Admin)")
     @PutMapping("/admin/{id}")
     public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostRequestDto dto) {
         return ResponseEntity.ok(postService.createOrUpdatePost(id, dto));
@@ -80,7 +80,7 @@ public class PostController {
     /**
      * Admin xoá mềm bài viết (không xoá khỏi DB).
      */
-    @Operation(summary = "Xoá mềm bài viết")
+    @Operation(summary = "Xoá mềm bài viết (Admin)")
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<String> softDelete(@PathVariable Long id) {
         postService.softDelete(id);
@@ -90,7 +90,7 @@ public class PostController {
     /**
      * Khôi phục bài viết đã bị xoá mềm.
      */
-    @Operation(summary = "Khôi phục bài viết đã xoá")
+    @Operation(summary = "Khôi phục bài viết đã xoá (Admin)")
     @PutMapping("/admin/{id}/restore")
     public ResponseEntity<String> restore(@PathVariable Long id) {
         postService.restore(id);
@@ -100,7 +100,7 @@ public class PostController {
     /**
      * Lấy danh sách các bài viết đã bị xoá mềm.
      */
-    @Operation(summary = "Lấy danh sách bài viết đã bị xoá mềm (chỉ admin)")
+    @Operation(summary = "Lấy danh sách bài viết đã bị xoá mềm (Admin)")
     @GetMapping("/admin/deleted")
     public ResponseEntity<PageResponse<PostResponseDto>> getDeletedPosts(
             @RequestParam(defaultValue = "0") int page,
@@ -130,7 +130,7 @@ public class PostController {
     /**
      * Tăng lượt xem cho bài viết theo slug.
      */
-    @Operation(summary = "Tăng lượt xem cho bài viết (qua slug)")
+    @Operation(summary = "Tăng lượt xem cho bài viết qua slug")
     @PatchMapping("/slug/{slug}/view")
     public ResponseEntity<String> increaseView(@PathVariable String slug) {
         postService.increaseViewCount(slug);

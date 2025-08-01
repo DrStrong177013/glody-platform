@@ -26,19 +26,19 @@ public class TagController {
         return tagService.getAll();
     }
 
-    @Operation(summary = "Tạo thẻ mới")
+    @Operation(summary = "Tạo thẻ mới (Admin)")
     @PostMapping
     public TagResponseDto create(@RequestBody TagRequestDto dto) {
         return tagService.create(dto);
     }
 
-    @Operation(summary = "Cập nhật thông tin thẻ")
+    @Operation(summary = "Cập nhật thông tin thẻ (Admin)")
     @PutMapping("/{id}")
     public TagResponseDto update(@PathVariable Long id, @RequestBody TagRequestDto dto) {
         return tagService.update(id, dto);
     }
 
-    @Operation(summary = "Xoá mềm thẻ")
+    @Operation(summary = "Xoá mềm thẻ (Admin)")
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         tagService.delete(id);

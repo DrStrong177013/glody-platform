@@ -4,6 +4,7 @@ public class ExpertEndpoints {
     public static final String[] ALL_ENDPOINTS = {
             "/api/expert-profiles/**",
             "/api/appointments/expert/**",
-            "/api/consultation-notes/**"
+            "/api/consultation-notes/**",
+            "/api/appointments/*/status"
     };
 }

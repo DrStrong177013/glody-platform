@@ -1,4 +1,4 @@
-package com.glody.glody_platform.users.controller;
+package com.glody.glody_platform.admin.controller;
 
 import com.glody.glody_platform.common.PageResponse;
 import com.glody.glody_platform.users.dto.UserDto;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
  * REST Controller quản lý tài khoản người dùng.
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
-@Tag(name = "User Controller", description = "Quản lý người dùng, đăng ký, phân trang và xóa mềm")
+@Tag(name = "User Controller", description = "Quản lý người dùng dành cho ADMIN")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -32,7 +32,7 @@ public class UserController {
     /**
      * Đăng ký người dùng mới.
      */
-    @Operation(summary = "Đăng ký người dùng mới")
+    @Operation(summary = "Đăng ký người dùng mới (Admin)")
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody UserDto userDto) {
         User newUser = userService.registerUser(userDto);
@@ -42,7 +42,7 @@ public class UserController {
     /**
      * Lấy thông tin người dùng theo ID.
      */
-    @Operation(summary = "Lấy thông tin người dùng theo ID")
+    @Operation(summary = "Lấy thông tin người dùng theo ID (Admin)")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         User user = userRepository.findById(id)
@@ -54,7 +54,7 @@ public class UserController {
     /**
      * Lấy danh sách người dùng (có phân trang hoặc toàn bộ).
      */
-    @Operation(summary = "Lấy danh sách người dùng (có thể phân trang)")
+    @Operation(summary = "Lấy danh sách người dùng (Admin)")
     @GetMapping
     public ResponseEntity<PageResponse<UserResponseDto>> getUsers(
             @RequestParam(required = false) Integer size,
@@ -107,7 +107,7 @@ public class UserController {
     /**
      * Xóa mềm người dùng theo ID.
      */
-    @Operation(summary = "Xoá mềm người dùng theo ID")
+    @Operation(summary = "Xoá mềm người dùng theo ID (Admin)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> softDeleteUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
@@ -123,7 +123,7 @@ public class UserController {
     /**
      * Khôi phục người dùng đã bị xoá mềm.
      */
-    @Operation(summary = "Khôi phục người dùng đã xoá mềm")
+    @Operation(summary = "Khôi phục người dùng đã xoá mềm (Admin)")
     @PutMapping("/restore/{id}")
     public ResponseEntity<String> restoreUser(@PathVariable Long id) {
         User user = userRepository.findById(id)

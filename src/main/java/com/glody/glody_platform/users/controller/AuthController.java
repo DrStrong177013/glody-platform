@@ -42,30 +42,10 @@ public class AuthController {
             String rawPassword = request.getPassword();
             String storedHash = user.getPasswordHash();
 
-            System.out.println("Testing password variations:");
-            System.out.println("1. Original: " + passwordEncoder.matches(rawPassword, storedHash));
-            System.out.println("2. Trimmed: " + passwordEncoder.matches(rawPassword.trim(), storedHash));
-            System.out.println("3. No special chars: " + passwordEncoder.matches(rawPassword.replaceAll("[^a-zA-Z0-9]", ""), storedHash));
-
-            // Thử với một số mật khẩu thông dụng để kiểm tra
-            String[] commonVariations = {
-                    "string_1", // lowercase
-                    "STRING_1", // uppercase
-                    "String1",  // no underscore
-                    "String-1"  // with hyphen
-            };
-
-            for (int i = 0; i < commonVariations.length; i++) {
-                System.out.println("Variation " + (i+4) + ": " +
-                        passwordEncoder.matches(commonVariations[i], storedHash));
-            }
 
             if (!passwordEncoder.matches(rawPassword, storedHash)) {
                 throw new BadCredentialsException("Mật khẩu không chính xác");
             }
-
-
-
 
             List<String> roleNames = user.getRoles().stream()
                     .map(role -> "ROLE_" + role.getRoleName().toUpperCase())

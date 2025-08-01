@@ -1,13 +1,14 @@
 package com.glody.glody_platform.users.controller;
 
 import com.glody.glody_platform.users.entity.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Hidden
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor

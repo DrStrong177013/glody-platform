@@ -25,8 +25,6 @@ public class Chat extends BaseEntity {
     @Column(nullable = false)
     private Boolean isRead = false;
 
-    private Boolean fromExpert = false;
-
     private String messageType = "TEXT"; // TEXT, IMAGE, FILE
 
     private String reaction; // ❤️, 👍, etc.

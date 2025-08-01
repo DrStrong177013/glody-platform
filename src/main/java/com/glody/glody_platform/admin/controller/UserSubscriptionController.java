@@ -1,4 +1,4 @@
-package com.glody.glody_platform.users.controller;
+package com.glody.glody_platform.admin.controller;
 
 import com.glody.glody_platform.common.PageResponse;
 import com.glody.glody_platform.users.dto.UserSubscriptionRequestDto;
@@ -18,9 +18,9 @@ import java.util.List;
  * REST Controller quản lý các gói đăng ký của người dùng.
  */
 @RestController
-@RequestMapping("/api/user-subscriptions")
+@RequestMapping("/api/admin/user-subscriptions")
 @RequiredArgsConstructor
-@Tag(name = "User Subscription Controller", description = "Quản lý các gói đăng ký người dùng")
+@Tag(name = "User Subscription Controller", description = "Quản lý các gói đăng ký người dùng cho 1 số trường hợp đặc biệt của ADMIN")
 public class UserSubscriptionController {
 
     private final UserSubscriptionService userSubscriptionService;
@@ -36,7 +36,7 @@ public class UserSubscriptionController {
      * @param direction Hướng sắp xếp (asc/desc)
      * @return Danh sách đăng ký theo yêu cầu
      */
-    @Operation(summary = "Lấy danh sách gói đăng ký của người dùng")
+    @Operation(summary = "Lấy danh sách gói đăng ký của người dùng (Admin)")
     @GetMapping
     public ResponseEntity<PageResponse<UserSubscriptionResponseDto>> getSubscriptions(
             @RequestParam Long userId,
@@ -85,7 +85,9 @@ public class UserSubscriptionController {
      * @param dto    Dữ liệu đăng ký
      * @return Đăng ký vừa được tạo
      */
-    @Operation(summary = "Tạo đăng ký mới cho người dùng")
+    @Operation(summary = "Tạo đăng ký mới cho người dùng (Admin)",
+            description = "API này để admin chỉnh sửa gói đăng ký nếú bên người dùng có vấn đề," +
+                    " đây không phải api đăng ký gói cho người dùng. Việc đăng ký gói sẽ phải thông qua thanh toán.")
     @PostMapping
     public ResponseEntity<UserSubscriptionResponseDto> subscribe(
             @RequestParam Long userId,

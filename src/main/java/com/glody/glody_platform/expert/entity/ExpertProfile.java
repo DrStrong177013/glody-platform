@@ -17,7 +17,7 @@ import java.util.Set;
 public class ExpertProfile extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id", nullable = false, unique = true) // Sửa từ user_id thành profile_id
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     private String bio;

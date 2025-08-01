@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@Tag(name = "Admin Stats Controller", description = "API dành cho quản trị viên để thống kê và quản lý hệ thống")
+@Tag(name = "Admin Stats Controller", description = "Đang sửa")
 public class AdminStatsController {
 
     private final UserSubscriptionRepository userSubscriptionRepository;

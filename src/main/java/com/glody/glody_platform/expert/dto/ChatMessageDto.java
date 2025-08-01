@@ -7,17 +7,12 @@ import lombok.Data;
 @Data
 public class ChatMessageDto {
 
-    @Schema(description = "ID người gửi", example = "3")
-    private Long senderId;
 
-    @Schema(description = "ID người nhận", example = "7")
+    @Schema(description = "ID người nhận", example = "6")
     private Long receiverId;
 
     @Schema(description = "Nội dung tin nhắn", example = "Em cần tư vấn về hồ sơ du học Đài Loan ạ")
     private String message;
-
-    @Schema(description = "Tin nhắn gửi từ chuyên gia hay không", example = "false", defaultValue = "false")
-    private Boolean fromExpert = false;
 
     @Schema(description = "Loại tin nhắn: TEXT, IMAGE, FILE", example = "TEXT", defaultValue = "TEXT")
     private String messageType = "TEXT";

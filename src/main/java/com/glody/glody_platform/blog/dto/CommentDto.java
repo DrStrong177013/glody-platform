@@ -15,9 +15,6 @@ public class CommentDto {
     @Schema(description = "Tên người gửi bình luận (nếu không đăng nhập)", example = "Nguyễn Văn A")
     private String name;
 
-    @Schema(description = "Email người gửi", example = "nguyenvana@example.com")
-    private String email;
-
     @Schema(description = "Nội dung bình luận", example = "Cảm ơn bạn đã chia sẻ thông tin hữu ích.")
     private String content;
 }

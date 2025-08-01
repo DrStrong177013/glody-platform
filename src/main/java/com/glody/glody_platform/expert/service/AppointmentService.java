@@ -26,8 +26,8 @@ public class AppointmentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public AppointmentResponseDto createAppointment(AppointmentRequestDto dto) {
-        User user = userRepository.findById(dto.getUserId())
+    public AppointmentResponseDto createAppointment(Long userId,AppointmentRequestDto dto) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         User expert = userRepository.findById(dto.getExpertId())
@@ -35,7 +35,10 @@ public class AppointmentService {
 
         Appointment appointment = new Appointment();
         appointment.setUser(user);
+        appointment.setEmail(user.getEmail());
         appointment.setExpert(expert);
+        appointment.setFullName(user.getFullName());
+        appointment.setPhone(user.getPhone());
         appointment.setAppointmentTime(dto.getAppointmentTime());
         appointment.setStatus(AppointmentStatus.PENDING);
 
@@ -94,10 +97,11 @@ public class AppointmentService {
         appointment.setPhone(dto.getPhone());
         appointment.setStatus(AppointmentStatus.PENDING);
 
+
         appointmentRepository.save(appointment);
 
-        // ✅ Gửi email xác nhận (giả lập log)
-        sendConfirmationEmail(dto);
+
+//        sendConfirmationEmail(dto);
 
         return appointment;
     }
@@ -134,6 +138,12 @@ public class AppointmentService {
                         ? appointment.getExpert().getFullName()
                         : "Chuyên gia không xác định"
         );
+        if (appointment.getUser() != null) {
+            dto.setIsAnonymous(false);
+        }
+        else {
+            dto.setIsAnonymous(true);
+        }
 
         return dto;
     }

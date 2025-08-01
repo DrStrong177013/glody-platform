@@ -23,10 +23,10 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void addComment(CommentRequestDto dto) {
+    public void addComment(Long userId,CommentRequestDto dto) {
         Post post = postRepository.findById(dto.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Comment comment = new Comment();
@@ -65,7 +65,17 @@ public class CommentService {
     }
 
     @Transactional
-    public void softDelete(Long commentId) {
+    public void softDelete(Long userId,Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        if(comment.getUser().getId() != userId)
+            throw new RuntimeException("Not user comment, can't delete");
+        comment.setIsDeleted(true);
+        comment.setDeletedAt(java.time.LocalDateTime.now());
+        commentRepository.save(comment);
+    }
+    @Transactional
+    public void softDeleteByAdmin(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
         comment.setIsDeleted(true);

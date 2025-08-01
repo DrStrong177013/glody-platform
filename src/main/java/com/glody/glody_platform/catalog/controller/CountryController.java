@@ -101,7 +101,7 @@ public class CountryController {
      * @return Thực thể quốc gia sau khi tạo
      */
     @Operation(
-            summary = "Tạo quốc gia mới",
+            summary = "Tạo quốc gia mới (Admin)",
             description = "Cho phép tạo mới một quốc gia trong hệ thống."
     )
     @PostMapping
@@ -118,7 +118,7 @@ public class CountryController {
      * @return Quốc gia sau khi cập nhật
      */
     @Operation(
-            summary = "Cập nhật quốc gia",
+            summary = "Cập nhật quốc gia (Admin)",
             description = "Cập nhật thông tin cho quốc gia dựa trên ID."
     )
     @PutMapping("/{id}")
@@ -134,7 +134,7 @@ public class CountryController {
      * @return Thông báo xoá thành công
      */
     @Operation(
-            summary = "Xoá mềm quốc gia",
+            summary = "Xoá mềm quốc gia (Admin)",
             description = "Thực hiện xoá mềm quốc gia khỏi hệ thống (vẫn giữ lại trong database)."
     )
     @DeleteMapping("/{id}")

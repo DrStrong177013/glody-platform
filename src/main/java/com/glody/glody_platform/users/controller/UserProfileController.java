@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,19 +19,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
-    private final UserRepository userRepository;
-
-    private Long getUserIdFromAuth(Authentication authentication) {
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
-        return user.getId();
-    }
 
     @Operation(summary = "Lấy hồ sơ của chính mình")
     @GetMapping("/me")
-    public ResponseEntity<UserProfileDto> getMyProfile(Authentication authentication) {
-        Long userId = getUserIdFromAuth(authentication);
+    public ResponseEntity<UserProfileDto> getMyProfile(
+            @AuthenticationPrincipal User currentUser) {
+
+        // currentUser đã được gán từ JwtAuthFilter
+        Long userId = currentUser.getId();
         UserProfileDto profile = userProfileService.getProfile(userId);
         return ResponseEntity.ok(profile);
     }
@@ -38,10 +34,10 @@ public class UserProfileController {
     @Operation(summary = "Lưu hoặc cập nhật hồ sơ người dùng hiện tại")
     @PutMapping("/me")
     public ResponseEntity<String> saveProfile(
-            Authentication authentication,
+            @AuthenticationPrincipal User currentUser,
             @RequestBody UserProfileDto dto) {
 
-        Long userId = getUserIdFromAuth(authentication);
+        Long userId = currentUser.getId();
         userProfileService.saveOrUpdate(userId, dto);
         return ResponseEntity.ok("📄 Hồ sơ người dùng đã được lưu/cập nhật.");
     }

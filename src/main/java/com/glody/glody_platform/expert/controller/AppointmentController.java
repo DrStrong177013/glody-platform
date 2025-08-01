@@ -5,10 +5,13 @@ import com.glody.glody_platform.expert.dto.AppointmentRequestDto;
 import com.glody.glody_platform.expert.dto.AppointmentResponseDto;
 import com.glody.glody_platform.expert.dto.AppointmentStatusUpdateDto;
 import com.glody.glody_platform.expert.service.AppointmentService;
+import com.glody.glody_platform.users.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,44 +30,44 @@ public class AppointmentController {
     /**
      * Người dùng đã đăng nhập thực hiện đặt lịch với chuyên gia.
      *
-     * @param dto Thông tin lịch hẹn
+     * @param currentUser Principal là User entity
+     * @param dto         Thông tin lịch hẹn
      * @return Thông tin lịch hẹn sau khi tạo
      */
     @Operation(
-            summary = "Đặt lịch hẹn (có tài khoản)",
+            summary = "Đặt lịch hẹn có tài khoản (Student)",
             description = "Người dùng đã đăng nhập thực hiện đặt lịch với chuyên gia."
     )
     @PostMapping
-    public ResponseEntity<AppointmentResponseDto> create(@RequestBody AppointmentRequestDto dto) {
-        AppointmentResponseDto created = appointmentService.createAppointment(dto);
+    public ResponseEntity<AppointmentResponseDto> create(
+            @AuthenticationPrincipal User currentUser,
+            @Valid @RequestBody AppointmentRequestDto dto) {
+
+        Long userId = currentUser.getId();
+        AppointmentResponseDto created = appointmentService.createAppointment(userId, dto);
         return ResponseEntity.ok(created);
     }
 
     /**
      * Lấy danh sách lịch hẹn đã đặt của người dùng.
-     *
-     * @param userId ID người dùng
-     * @return Danh sách lịch hẹn
      */
     @Operation(
-            summary = "Lấy lịch hẹn của người dùng",
-            description = "Trả về tất cả lịch hẹn đã đặt của một người dùng cụ thể theo userId."
+            summary = "Lấy lịch hẹn của người dùng hiện tại (Student)",
+            description = "Trả về tất cả lịch hẹn đã đặt."
     )
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<AppointmentResponseDto>> getUserAppointments(@PathVariable Long userId) {
+    @GetMapping("/user/me")
+    public ResponseEntity<List<AppointmentResponseDto>> getCurrentUserAppointments(@AuthenticationPrincipal User currentUser) {
+        Long userId = currentUser.getId();
         List<AppointmentResponseDto> list = appointmentService.getAppointmentsByUser(userId);
         return ResponseEntity.ok(list);
     }
 
     /**
      * Lấy danh sách lịch hẹn của một chuyên gia.
-     *
-     * @param expertId ID chuyên gia
-     * @return Danh sách lịch hẹn
      */
     @Operation(
-            summary = "Lấy lịch hẹn của chuyên gia",
-            description = "Trả về tất cả lịch hẹn đã được đặt với một chuyên gia cụ thể theo expertId."
+            summary = "Lấy lịch hẹn của chuyên gia(Expert)",
+            description = "Trả về tất cả lịch hẹn đã được đặt với một chuyên gia cụ thể."
     )
     @GetMapping("/expert/{expertId}")
     public ResponseEntity<List<AppointmentResponseDto>> getExpertAppointments(@PathVariable Long expertId) {
@@ -73,15 +76,11 @@ public class AppointmentController {
     }
 
     /**
-     * Cập nhật trạng thái lịch hẹn (xác nhận, hoàn thành, huỷ).
-     *
-     * @param appointmentId ID lịch hẹn
-     * @param dto           Trạng thái mới
-     * @return Thông báo cập nhật
+     * Cập nhật trạng thái lịch hẹn.
      */
     @Operation(
-            summary = "Cập nhật trạng thái lịch hẹn",
-            description = "Chuyên gia hoặc admin có thể xác nhận, hoàn thành hoặc hủy lịch hẹn. (PENDING, CONFIRMED, COMPLETED, CANCELED)"
+            summary = "Cập nhật trạng thái lịch hẹn (Expert).",
+            description = "Chuyên gia có thể xác nhận, hoàn thành hoặc hủy lịch hẹn(ENUM AppointmentStatus: PENDING, CONFIRMED, COMPLETED,CANCELED"
     )
     @PatchMapping("/{appointmentId}/status")
     public ResponseEntity<String> updateStatus(
@@ -94,16 +93,13 @@ public class AppointmentController {
 
     /**
      * Khách ẩn danh đặt lịch với chuyên gia.
-     *
-     * @param dto Thông tin lịch hẹn
-     * @return Phản hồi đặt lịch thành công
      */
     @Operation(
-            summary = "Người dùng ẩn danh đặt lịch với chuyên gia",
-            description = "Cho phép khách (chưa đăng nhập) đặt lịch hẹn nhanh với chuyên gia. Thông tin được lưu dưới dạng ẩn danh."
+            summary = "Người dùng ẩn danh đặt lịch với chuyên gia (UnAuth)",
+            description = "Cho phép khách (chưa đăng nhập) đặt lịch hẹn nhanh với chuyên gia."
     )
     @PostMapping("/public")
-    public ResponseEntity<String> anonymousBooking(@RequestBody AppointmentBookingDto dto) {
+    public ResponseEntity<String> anonymousBooking(@Valid @RequestBody AppointmentBookingDto dto) {
         appointmentService.createAnonymousAppointment(dto);
         return ResponseEntity.ok("📅 Đặt lịch hẹn thành công! Chuyên gia sẽ liên hệ với bạn.");
     }

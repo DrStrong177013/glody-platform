@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class CategoryRequestDto {
 
-    @Schema(description = "Tên chuyên mục bài viết", example = "Học Bổng")
+    @Schema(description = "Tên chuyên mục bài viết", example = "Chia sẻ")
     private String name;
 }

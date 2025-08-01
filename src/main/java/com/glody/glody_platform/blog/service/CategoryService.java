@@ -7,8 +7,10 @@ import com.glody.glody_platform.blog.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +21,24 @@ public class CategoryService {
     private boolean existsByName(String name) {
         return categoryRepository.existsByNameIgnoreCaseAndIsDeletedFalse(name);
     }
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-z0-9\\s]", "")
-                .replaceAll("\\s+", "-");
+    private String generateSlug(String input) {
+        if (input == null) {
+            return "";
+        }
+        // 1. Chuẩn hóa về NFD để tách ký tự base và dấu
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        // 2. Xóa toàn bộ “dấu” (combining marks)
+        String noAccent = normalized.replaceAll("\\p{M}", "");
+        // 3. Chuyển về lowercase, xóa ký tự không phải chữ/số/khoảng trắng/hyphen
+        String cleaned = noAccent
+                .toLowerCase(Locale.ENGLISH)
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .trim();
+        // 4. Thay khoảng trắng (có thể nhiều) bằng 1 dấu gạch ngang, gộp nhiều hyphen
+        String slug = cleaned
+                .replaceAll("\\s+", "-")    // whitespace → hyphen
+                .replaceAll("-{2,}", "-");  // collapse nhiều hyphens
+        return slug;
     }
 
 

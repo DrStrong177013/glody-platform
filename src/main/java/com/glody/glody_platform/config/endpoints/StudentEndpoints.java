@@ -4,8 +4,7 @@ public class StudentEndpoints {
     public static final String[] ALL_ENDPOINTS = {
             "/api/language-certificates/**",
             "/api/appointments",
-            "/api/appointments/user/**",
-            "/api/user-profiles/**",
+            "/api/appointments/user/me",
             "/api/matching-history",
             "/api/programs/matching",
             "/api/scholarships/matching"

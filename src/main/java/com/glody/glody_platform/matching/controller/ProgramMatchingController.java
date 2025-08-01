@@ -22,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/programs")
 @RequiredArgsConstructor
-@Tag(name = "Program Matching", description = "API gợi ý chương trình học phù hợp (chỉ áp dụng với gói PREMIUM)")
+@Tag(name = "Program Matching", description = "Đang sửa")
 public class ProgramMatchingController {
 
     private final ProgramMatchingService matchingService;

@@ -23,8 +23,8 @@ public class ChatService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ChatResponseDto sendMessage(ChatMessageDto dto) {
-        User sender = userRepository.findById(dto.getSenderId())
+    public ChatResponseDto sendMessage(long senderId,ChatMessageDto dto) {
+        User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
         User receiver = userRepository.findById(dto.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
@@ -33,7 +33,6 @@ public class ChatService {
         chat.setSender(sender);
         chat.setReceiver(receiver);
         chat.setMessage(dto.getMessage());
-        chat.setFromExpert(dto.getFromExpert());
         chat.setMessageType(dto.getMessageType());
         chat.setIsRead(false);
 
@@ -100,7 +99,7 @@ public class ChatService {
         dto.setId(chat.getId());
         dto.setMessage(chat.getMessage());
         dto.setIsRead(chat.getIsRead());
-        dto.setFromExpert(chat.getFromExpert());
+
         dto.setMessageType(chat.getMessageType());
         dto.setReaction(chat.getReaction());
         dto.setCreatedAt(chat.getCreatedAt());

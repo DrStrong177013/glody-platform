@@ -17,7 +17,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/matching-history")
 @RequiredArgsConstructor
-@Tag(name = "Matching History Controller", description = "API lấy lịch sử matching của người dùng")
+@Tag(name = "Matching History Controller", description = "Đang sửa")
 public class MatchingHistoryController {
 
     private final MatchingHistoryService service;

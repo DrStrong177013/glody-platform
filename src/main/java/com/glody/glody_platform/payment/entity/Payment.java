@@ -31,7 +31,7 @@ public class Payment extends BaseEntity {
     private LocalDateTime paidAt;
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status; // SUCCESS, FAIL
+    private PaymentStatus status;
     private String responseCode;
 
 }

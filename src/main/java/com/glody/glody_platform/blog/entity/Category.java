@@ -17,5 +17,4 @@ public class Category extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String slug;
 
-    private String description;
 }

@@ -28,7 +28,7 @@ public class ConsultationNoteController {
      * @param dto Dữ liệu ghi chú
      * @return Ghi chú vừa được tạo
      */
-    @Operation(summary = "Tạo ghi chú tư vấn cho lịch hẹn")
+    @Operation(summary = "Tạo ghi chú tư vấn cho lịch hẹn (Expert)")
     @PostMapping
     public ResponseEntity<ConsultationNote> addNote(@RequestBody ConsultationNoteDto dto) {
         ConsultationNote note = consultationNoteService.addNote(dto);
@@ -41,7 +41,7 @@ public class ConsultationNoteController {
      * @param appointmentId ID lịch hẹn
      * @return Ghi chú tương ứng
      */
-    @Operation(summary = "Lấy ghi chú tư vấn theo lịch hẹn")
+    @Operation(summary = "Lấy ghi chú tư vấn theo lịch hẹn (Expert)")
     @GetMapping("/{appointmentId}")
     public ResponseEntity<ConsultationNote> getNote(@PathVariable Long appointmentId) {
         ConsultationNote note = consultationNoteService.getNoteByAppointment(appointmentId);

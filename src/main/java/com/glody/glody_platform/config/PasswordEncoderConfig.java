@@ -10,7 +10,6 @@ public class PasswordEncoderConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Đảm bảo sử dụng BCryptPasswordEncoder nguyên bản từ Spring Security
         return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(12);
     }
 
