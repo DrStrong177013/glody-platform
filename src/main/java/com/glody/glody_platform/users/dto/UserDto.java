@@ -34,6 +34,6 @@ public class UserDto {
     private String phone;
     @Schema(description = "URL ảnh đại diện", example = "https://cdn.glody.vn/avatar.jpg")
     private String avatarUrl;
-    @Schema(description = "Người dùng này có phải chuyên gia không?", example = "false")
-    private Boolean isExpert = false;
+//    @Schema(description = "Người dùng này có phải chuyên gia không?", example = "false")
+//    private Boolean isExpert = false;
 }

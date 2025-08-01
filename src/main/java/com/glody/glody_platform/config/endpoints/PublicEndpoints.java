@@ -3,10 +3,15 @@ package com.glody.glody_platform.config.endpoints;
 public class PublicEndpoints {
     public static final String[] GET_ENDPOINTS = {
             "/api/auth/**",
-            "/api/users/register",
+
+            "/v3/api-docs",
             "/v3/api-docs/**",
-            "/swagger-ui/**",
             "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/swagger-ui/index.html",
+            "/swagger-ui/index.html**",
+            "/favicon.ico",
+
             "/api/posts",
             "/api/posts/slug/*/view",
             "/api/comments/post/*",
@@ -27,6 +32,8 @@ public class PublicEndpoints {
             "/api/vnpay-ipn",
             "/api/tags",
             "/api/program-requirements/**",
+            "/api/search/programs",
+            "/api/search/programs/*"
 
     };
 

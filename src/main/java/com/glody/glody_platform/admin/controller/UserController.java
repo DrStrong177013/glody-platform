@@ -30,16 +30,6 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * Đăng ký người dùng mới.
-     */
-    @Operation(summary = "Đăng ký người dùng mới (Admin)")
-    @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody UserDto userDto) {
-        User newUser = userService.registerUser(userDto);
-        return ResponseEntity.ok(newUser);
-    }
-
-    /**
      * Lấy thông tin người dùng theo ID.
      */
     @Operation(summary = "Lấy thông tin người dùng theo ID (Admin)")

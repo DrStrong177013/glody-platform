@@ -15,5 +15,5 @@ public class CountryResponseDto {
     private Long id;
     private String name;
     private String code;
-    private List<UniversityDto> universities;
+    private List<SchoolDto> schools;
 }

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/schools")
 @RequiredArgsConstructor
 @Tag(name = "School Controller", description = "Quản lý trường học")
-public class SchoolController {
+public class    SchoolController {
 
     private final SchoolService schoolService;
 

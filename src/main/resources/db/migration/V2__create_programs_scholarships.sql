@@ -12,9 +12,21 @@ CREATE TABLE schools (
                          established_year INT,
                          introduction     TEXT,
                          location         VARCHAR(255),
+
+    -- Thêm trường country_id để liên kết với bảng countries
+                         country_id       BIGINT       NOT NULL,
+
                          rank_text        VARCHAR(255),
                          website          VARCHAR(255),
-                         logo_url         VARCHAR(255)
+                         logo_url         VARCHAR(255),
+
+    -- Tạo index và ràng buộc khóa ngoại
+                         INDEX idx_schools_country_id (country_id),
+                         CONSTRAINT fk_schools_country
+                             FOREIGN KEY (country_id)
+                                 REFERENCES countries(id)
+                                 ON UPDATE CASCADE
+                                 ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 -- 2. Scholarships

@@ -30,13 +30,12 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User registerUser(UserDto userDto) {
+    public User registerUser(UserDto userDto, boolean isExpert) {
         if (userRepository.existsByEmailAndIsDeletedFalse(userDto.getEmail())) {
             throw new RuntimeException("Email already in use");
         }
 
-        // ✅ Xác định vai trò
-        String roleName = userDto.getIsExpert() != null && userDto.getIsExpert() ? "EXPERT" : "STUDENT";
+        String roleName = isExpert ? "EXPERT" : "STUDENT";
         Role role = roleRepository.findByRoleName(roleName)
                 .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
 
@@ -46,18 +45,16 @@ public class UserService {
         user.setPhone(userDto.getPhone());
         user.setRoles(Collections.singleton(role));
         user.setFullName(userDto.getFullName());
-
-
         User savedUser = userRepository.save(user);
 
-        // ✅ Create UserProfile (dù là expert hay không)
+        // Tạo UserProfile
         UserProfile profile = new UserProfile();
         profile.setUser(savedUser);
         profile.setFullName(userDto.getFullName());
         userProfileRepository.save(profile);
 
-        // ✅ Nếu là expert => Tạo thêm ExpertProfile
-        if (Boolean.TRUE.equals(userDto.getIsExpert())) {
+        // Nếu expert thì tạo ExpertProfile
+        if (isExpert) {
             ExpertProfile expertProfile = new ExpertProfile();
             expertProfile.setUser(savedUser);
             expertProfile.setBio("");
@@ -67,10 +64,9 @@ public class UserService {
             expertProfileRepository.save(expertProfile);
         }
 
-        // ✅ Gán gói FREE mặc định
+        // Gán gói FREE
         SubscriptionPackage freePackage = subscriptionPackageRepository.findByName("FREE")
                 .orElseThrow(() -> new RuntimeException("Default FREE package not found"));
-
         UserSubscription subscription = new UserSubscription();
         subscription.setUser(savedUser);
         subscription.setSubscriptionPackage(freePackage);
@@ -81,6 +77,7 @@ public class UserService {
 
         return savedUser;
     }
+
 
 
 }

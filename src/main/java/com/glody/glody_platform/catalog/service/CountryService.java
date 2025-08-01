@@ -2,9 +2,11 @@ package com.glody.glody_platform.catalog.service;
 
 import com.glody.glody_platform.catalog.dto.CountryRequestDto;
 import com.glody.glody_platform.catalog.dto.CountryResponseDto;
+import com.glody.glody_platform.catalog.dto.SchoolDto;
 import com.glody.glody_platform.catalog.dto.UniversityDto;
 import com.glody.glody_platform.catalog.entity.Country;
 import com.glody.glody_platform.catalog.repository.CountryRepository;
+import com.glody.glody_platform.university.entity.School;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -69,16 +71,19 @@ public class CountryService {
         dto.setName(country.getName());
         dto.setCode(country.getCode());
 
-        List<UniversityDto> universityDtos = country.getUniversities().stream()
-                .filter(u -> !u.getIsDeleted())
-                .map(u -> {
-                    UniversityDto ud = new UniversityDto();
-                    ud.setId(u.getId());
-                    ud.setName(u.getName());
-                    return ud;
-                }).collect(Collectors.toList());
+        List<SchoolDto> schoolDtos = country.getSchools().stream()
+                // lọc những school chưa bị xóa
+                .filter(s -> !s.getIsDeleted())
+                .map(s -> {
+                    SchoolDto sd = new SchoolDto();
+                    sd.setId(s.getId());
+                    sd.setName(s.getName());
+                    return sd;
+                })
+                .collect(Collectors.toList());
 
-        dto.setUniversities(universityDtos);
+        dto.setSchools(schoolDtos);
         return dto;
     }
+
 }

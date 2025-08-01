@@ -1,5 +1,6 @@
 package com.glody.glody_platform.university.entity;
 
+import com.glody.glody_platform.catalog.entity.Country;
 import com.glody.glody_platform.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -39,4 +40,13 @@ public class School extends BaseEntity {
 
     @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Scholarship> scholarships;
+
+    // Quan hệ nhiều trường thuộc 1 quốc gia
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "country_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_schools_country")
+    )
+    private Country country;
 }

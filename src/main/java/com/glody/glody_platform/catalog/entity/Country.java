@@ -2,6 +2,7 @@ package com.glody.glody_platform.catalog.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.glody.glody_platform.common.BaseEntity;
+import com.glody.glody_platform.university.entity.School;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,10 @@ public class Country extends BaseEntity {
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
     @JsonManagedReference // ✅ quản lý chiều serialize chính
     private List<University> universities = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<School> schools = new ArrayList<>();
 }
 
 
