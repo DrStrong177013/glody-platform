@@ -26,6 +26,7 @@ public class PublicEndpoints {
             "/api/create-payment",
             "/api/vnpay-ipn",
             "/api/tags",
+            "/api/program-requirements/**",
 
     };
 

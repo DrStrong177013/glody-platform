@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/program-requirements")
 @RequiredArgsConstructor
-@Tag(name = "Program Requirement Controller", description = "Đang sửa")
+@Tag(name = "Program Requirement Controller", description = "Yêu cầu hồ sơ cho chương trình học (đang sửa)")
 public class ProgramRequirementController {
 
     private final ProgramRequirementService service;
@@ -22,14 +22,16 @@ public class ProgramRequirementController {
     }
 
     @PostMapping("/{programId}")
-    @Operation(summary = "Tạo hoặc cập nhật yêu cầu hồ sơ cho chương trình")
+    @Operation(summary = "Tạo hoặc cập nhật yêu cầu hồ sơ cho chương trình (Admin)",
+    description = "API này thực chất chỉ là cập nhật requirements cho Program đang tồn tại" +
+            " nên sẽ không tạo vì nó mặc định được tạo sẵn khi có Program và phụ thuộc vào hoàn toàn vào Program")
     public ProgramRequirementDto createOrUpdate(@PathVariable Long programId,
                                                 @RequestBody ProgramRequirementDto dto) {
         return service.createOrUpdate(programId, dto);
     }
 
     @DeleteMapping("/{programId}")
-    @Operation(summary = "Xoá yêu cầu hồ sơ khỏi chương trình")
+    @Operation(summary = "Xoá yêu cầu hồ sơ khỏi chương trình (Admin)")
     public String delete(@PathVariable Long programId) {
         service.deleteByProgramId(programId);
         return "Deleted";
