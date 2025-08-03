@@ -16,6 +16,13 @@ jobs:
         steps:
           - name: Checkout repository
             uses: actions/checkout@v4
+
+          - name: Decode keystore vào src/main/resources
+            run: |
+              mkdir -p src/main/resources/keystore
+              echo "${{ secrets.KEYSTORE_BASE64 }}" \
+              | tr -d '\r' \
+              | base64 -d > src/main/resources/keystore/keystore.p12
           
           - name: Log in to Docker Hub
             uses: docker/login-action@v3
