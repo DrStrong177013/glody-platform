@@ -25,10 +25,9 @@ jobs:
               | tr -d '\r' \
               | base64 -d > src/main/resources/keystore/keystore.p12
 
-          - name: debug list keystore
+          - name: Kiểm tra file keystore
             run: |
               echo "== LS keystore folder =="
-              echo "Secret length: ${# secrets.SSL_KEYSTORE_BASE64 }"
               ls -l src/main/resources/keystore
               echo "== File size =="
               wc -c src/main/resources/keystore/keystore.p12
