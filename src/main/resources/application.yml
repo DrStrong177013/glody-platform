@@ -39,9 +39,9 @@ spring:
 server:
   port: 8080
   ssl:
-    enabled: false
-    key-store-provider: sslStoreProvider
-    key-store-password: ${SSL_KEYSTORE_PASSWORD}
+    enabled: true
+    key-store: classpath:keystore/keystore.p12
+    key-store-password: ${SSL_KEYSTORE_PASSWORD:password}
     key-store-type: PKCS12
 
 jwt:
