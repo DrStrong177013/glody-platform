@@ -15,9 +15,9 @@ services:
       - 9876:9876
     environment:
       - TZ=Asia/Ho_Chi_Minh
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
     volumes:
         - /etc/localtime:/etc/localtime:ro
-
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

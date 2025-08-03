@@ -21,13 +21,14 @@ jobs:
           - name: Decode keystore vào src/main/resources
             run: |
               mkdir -p src/main/resources/keystore
-              echo "${{ secrets.KEYSTORE_BASE64 }}" \
+              echo "${{ secrets.SSL_KEYSTORE_BASE64 }}" \
               | tr -d '\r' \
               | base64 -d > src/main/resources/keystore/keystore.p12
 
           - name: debug list keystore
             run: |
               echo "== LS keystore folder =="
+              echo "Secret length: ${# secrets.SSL_KEYSTORE_BASE64 }"
               ls -l src/main/resources/keystore
               echo "== File size =="
               wc -c src/main/resources/keystore/keystore.p12
