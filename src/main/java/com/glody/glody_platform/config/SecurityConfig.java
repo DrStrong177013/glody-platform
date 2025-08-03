@@ -39,6 +39,7 @@ public class SecurityConfig {
                         // 1) explicitly permit your auth URLs
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/webhook/payos").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // 2) public GET/POST (if you have other public);
                         //    you can still keep your existing arrays here

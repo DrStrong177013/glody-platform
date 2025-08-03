@@ -20,6 +20,9 @@ public class CorsConfig {
                         .allowedOrigins(
                                 "https://pog.threemusketeer.click",
                                 "http://localhost:9876",
+                                "http://127.0.0.1:9876",
+                                "https://localhost:9876",
+                                "https://127.0.0.1:9876",
                                 "https://api-merchant.payos.vn"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
@@ -30,4 +33,5 @@ public class CorsConfig {
             }
         };
     }
+
 }
