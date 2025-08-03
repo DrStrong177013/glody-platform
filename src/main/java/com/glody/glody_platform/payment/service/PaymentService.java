@@ -8,6 +8,8 @@ import com.glody.glody_platform.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.payos.type.Webhook;
+import vn.payos.type.WebhookData;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,6 @@ public class PaymentService {
     public InvoiceResponseDto createInvoiceAndPayment(CreateInvoiceRequestDto dto, Long userId) {
         Invoice invoice = invoiceService.createInvoice(dto, userId);
 
-        // Gọi sang PayosService để lấy link thanh toán
         CreatePaymentResponse payResp = payosService.createLink(
                 invoice.getId(),
                 invoice.getTotalAmount().longValue(),
@@ -29,7 +30,6 @@ public class PaymentService {
         );
         String checkoutUrl = payResp.getData().getCheckoutUrl();
 
-        // Lưu record payment
         Payment payment = new Payment();
         payment.setInvoice(invoice);
         payment.setUser(invoice.getUser());
@@ -39,7 +39,6 @@ public class PaymentService {
         payment.setTransactionId(invoice.getCode());
         paymentRepository.save(payment);
 
-        // Đóng gói response
         InvoiceResponseDto res = new InvoiceResponseDto();
         res.setId(invoice.getId());
         res.setCode(invoice.getCode());
@@ -54,12 +53,14 @@ public class PaymentService {
         return res;
     }
 
-    public boolean handlePayosWebhook(PayosWebhookRequest webhookRequest) {
-        if (!payosService.validateSignature(webhookRequest)) {
+    public boolean handlePayosWebhook(Webhook webhookRequest) {
+        if (!payosService.validateWebhook(webhookRequest)) {
             return false;
         }
-        PayosNotificationData data = webhookRequest.getData();
+        WebhookData data = webhookRequest.getData();
         invoiceService.updateInvoiceStatus(data.getOrderCode(), data.getCode());
         return true;
     }
+
+
 }

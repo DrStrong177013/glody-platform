@@ -58,6 +58,7 @@ public class InvoiceService {
     public void updateInvoiceStatus(Long orderCode, String statusCode) {
         Invoice invoice = invoiceRepository.findById(orderCode)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
         if ("00".equals(statusCode)) {
             invoice.setStatus(InvoiceStatus.PAID);
         } else {
@@ -66,4 +67,3 @@ public class InvoiceService {
         invoiceRepository.save(invoice);
     }
 }
-
