@@ -90,7 +90,8 @@ COPY --from=extract build/target/extracted/dependencies/ ./
 COPY --from=extract build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract build/target/extracted/application/ ./
-
+COPY src/main/resources/keystore/keystore.p12 /app/keystore/keystore.p12
+ENV SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
 EXPOSE 9876
 
 ENTRYPOINT [ "java", "org.springframework.boot.loader.launch.JarLauncher" ]
