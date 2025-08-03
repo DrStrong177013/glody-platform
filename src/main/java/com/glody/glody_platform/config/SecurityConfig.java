@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 // require HTTPS everywhere
-                .requiresChannel(channel -> channel.anyRequest().requiresSecure())
+//                .requiresChannel(channel -> channel.anyRequest().requiresSecure())
 
                 // stateless session (no HttpSession)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
