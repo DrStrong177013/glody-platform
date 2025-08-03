@@ -36,13 +36,13 @@ spring:
 #  config:
 #    import: optional:file:.env[.properties]
 
-server:
-  port: 8080
-  ssl:
-    enabled: true
-    key-store: classpath:keystore/keystore.p12
-    key-store-password: ${SSL_KEYSTORE_PASSWORD:password}
-    key-store-type: PKCS12
+#server:
+#  port: 8080
+#  ssl:
+#    enabled: true
+#    key-store: classpath:keystore/keystore.p12
+#    key-store-password: ${SSL_KEYSTORE_PASSWORD:password}
+#    key-store-type: PKCS12
 
 jwt:
   secret: secret-key-change-this
