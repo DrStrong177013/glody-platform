@@ -17,7 +17,11 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry
                         .addMapping("/**")
-                        .allowedOrigins("https://pog.threemusketeer.click")
+                        .allowedOrigins(
+                                "https://pog.threemusketeer.click",
+                                "http://localhost:9876",
+                                "https://api-merchant.payos.vn"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
                         .allowedHeaders("*")
                         .allowCredentials(true)
