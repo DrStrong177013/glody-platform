@@ -149,6 +149,10 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
+                <excludes>
+                    <exclude>keystore/*.b64</exclude>
+                    <exclude>keystore/*.base64</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>
