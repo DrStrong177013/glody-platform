@@ -20,17 +20,17 @@ jobs:
 
           - name: Decode keystore vào src/main/resources
             run: |
-              mkdir -p src/main/resources/keystore
+              mkdir -p src/main/resources
               echo "${{ secrets.SSL_KEYSTORE_BASE64 }}" \
               | tr -d '\r' \
-              | base64 -d > src/main/resources/keystore/keystore.p12
+              | base64 -d > src/main/resources/keystore.p12
 
           - name: Kiểm tra file keystore
             run: |
               echo "== LS keystore folder =="
-              ls -l src/main/resources/keystore
+              ls -l src/main/resources
               echo "== File size =="
-              wc -c src/main/resources/keystore/keystore.p12
+              wc -c src/main/resources/keystore.p12
 
           - name: Dump build context
             run: |

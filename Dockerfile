@@ -90,7 +90,7 @@ COPY --from=extract build/target/extracted/dependencies/ ./
 COPY --from=extract build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract build/target/extracted/application/ ./
-COPY src/main/resources/keystore/keystore.p12 /app/keystore/keystore.p12
+COPY src/main/resources/keystore.p12 /app/keystore.p12
 
 EXPOSE 9876
 
