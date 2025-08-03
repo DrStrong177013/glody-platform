@@ -7,6 +7,7 @@ public class CreatePaymentResponse {
     private String  code;   // "00" = success
     private String  desc;
     private DataObj data;
+    private  boolean success;
     @Data
     public static class DataObj {
         private String checkoutUrl;  // link PayOS trả về

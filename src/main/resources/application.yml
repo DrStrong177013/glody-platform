@@ -39,10 +39,6 @@ jwt:
   secret: secret-key-change-this
   expirationMs: 86400000
 
-springdoc:
-  swagger-ui:
-    tagsSorter: alpha
-    operationsSorter: alpha
 
 payos:
   client-id:    ${PAYOS_CLIENT_ID:757c90c4-63da-4d1f-8d70-041bee93be81}

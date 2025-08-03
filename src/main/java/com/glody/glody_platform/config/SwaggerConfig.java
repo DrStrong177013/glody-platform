@@ -18,7 +18,7 @@ public class SwaggerConfig {
                         .title("Glody Study Abroad API")
                         .description("API documentation for Glody Platform")
                         .version("1.0.0"))
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth")) // 👈 Apply globally
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
