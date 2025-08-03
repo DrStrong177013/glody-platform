@@ -30,8 +30,6 @@ public class PayosService {
     }
 
     public CreatePaymentResponse createLink(Long orderCode, Long amount, String returnUrl, String cancelUrl) {
-        // tự build signature (nếu cần) theo doc
-        // hoặc chỉ cần truyền các trường, PayOS sẽ tự ký
         CreatePaymentRequest req = new CreatePaymentRequest();
         req.setOrderCode(orderCode);
         req.setAmount(amount);

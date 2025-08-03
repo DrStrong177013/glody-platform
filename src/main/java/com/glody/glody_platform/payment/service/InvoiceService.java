@@ -56,7 +56,7 @@ public class InvoiceService {
 
     @Transactional
     public void updateInvoiceStatus(Long orderCode, String statusCode) {
-        Invoice invoice = invoiceRepository.findById(orderCode)
+        Invoice invoice = invoiceRepository.findByCode(orderCode.toString())
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
 
         if ("00".equals(statusCode)) {
