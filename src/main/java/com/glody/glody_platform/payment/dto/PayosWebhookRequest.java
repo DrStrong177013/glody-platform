@@ -6,7 +6,7 @@ import lombok.Data;
 public class PayosWebhookRequest {
     private String code;
     private String desc;
-    private boolean success;
-    private PayosNotificationData data; // Dùng class PayosNotificationData mô phỏng đúng structure trong "data"
+    private Boolean success;
+    private PayosNotificationData data;
     private String signature;
 }

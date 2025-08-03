@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Service
@@ -53,8 +54,8 @@ public class PayosService {
     private String hmacHex(String data, String key) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
-            byte[] raw = mac.doFinal(data.getBytes());
+            mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
             for (byte b : raw) sb.append(String.format("%02x", b));
             return sb.toString();
@@ -63,15 +64,33 @@ public class PayosService {
         }
     }
 
+
     public boolean validateSignature(PayosWebhookRequest webhookRequest) {
         PayosNotificationData d = webhookRequest.getData();
-        String dataToSign =
-                "orderCode=" + d.getOrderCode() +
-                        "&amount=" + d.getAmount() +
-                        "&description=" + d.getDescription() +
-                        "&reference=" + d.getReference() +
-                        "&status=" + d.getCode();
-        String calculatedSignature = hmacHex(dataToSign, checksumKey);
+        String stringToSign = buildStringToSign(d);
+        String calculatedSignature = hmacHex(stringToSign, this.checksumKey);
         return calculatedSignature.equalsIgnoreCase(webhookRequest.getSignature());
     }
+
+    public String buildStringToSign(PayosNotificationData data) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("orderCode=").append(data.getOrderCode() == null ? "" : data.getOrderCode());
+        sb.append("&amount=").append(data.getAmount() == null ? "" : data.getAmount());
+        sb.append("&description=").append(data.getDescription() == null ? "" : data.getDescription());
+        sb.append("&accountNumber=").append(data.getAccountNumber() == null ? "" : data.getAccountNumber());
+        sb.append("&reference=").append(data.getReference() == null ? "" : data.getReference());
+        sb.append("&transactionDateTime=").append(data.getTransactionDateTime() == null ? "" : data.getTransactionDateTime());
+        sb.append("&currency=").append(data.getCurrency() == null ? "" : data.getCurrency());
+        sb.append("&paymentLinkId=").append(data.getPaymentLinkId() == null ? "" : data.getPaymentLinkId());
+        sb.append("&code=").append(data.getCode() == null ? "" : data.getCode());
+        sb.append("&desc=").append(data.getDesc() == null ? "" : data.getDesc());
+        sb.append("&counterAccountBankId=").append(data.getCounterAccountBankId() == null ? "" : data.getCounterAccountBankId());
+        sb.append("&counterAccountBankName=").append(data.getCounterAccountBankName() == null ? "" : data.getCounterAccountBankName());
+        sb.append("&counterAccountName=").append(data.getCounterAccountName() == null ? "" : data.getCounterAccountName());
+        sb.append("&counterAccountNumber=").append(data.getCounterAccountNumber() == null ? "" : data.getCounterAccountNumber());
+        sb.append("&virtualAccountName=").append(data.getVirtualAccountName() == null ? "" : data.getVirtualAccountName());
+        sb.append("&virtualAccountNumber=").append(data.getVirtualAccountNumber() == null ? "" : data.getVirtualAccountNumber());
+        return sb.toString();
+    }
+
 }
