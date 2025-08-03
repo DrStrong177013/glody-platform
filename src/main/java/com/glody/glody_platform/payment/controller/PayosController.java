@@ -1,7 +1,7 @@
-package com.glody.glody_platform.payOS.web;
+package com.glody.glody_platform.payment.controller;
 
-import com.glody.glody_platform.payOS.dto.CreatePaymentResponse;
-import com.glody.glody_platform.payOS.service.PayosService;
+import com.glody.glody_platform.payment.dto.CreatePaymentResponse;
+import com.glody.glody_platform.payment.service.PayosService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

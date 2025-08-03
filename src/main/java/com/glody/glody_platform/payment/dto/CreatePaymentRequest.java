@@ -1,4 +1,4 @@
-package com.glody.glody_platform.payOS.dto;
+package com.glody.glody_platform.payment.dto;
 
 import lombok.Data;
 

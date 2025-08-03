@@ -171,7 +171,7 @@ CREATE TABLE posts (
                        PRIMARY KEY (id),
                        UNIQUE KEY uq_posts_slug (slug),
                        FOREIGN KEY (category_id) REFERENCES categories(id),
-                       FOREIGN KEY (country_id) REFERENCES countries(id)
+                       FOREIGN KEY (country_id)   REFERENCES countries(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE comments (
@@ -186,30 +186,30 @@ CREATE TABLE comments (
                           user_id       BIGINT       NOT NULL,
                           PRIMARY KEY (id),
                           FOREIGN KEY (parent_id) REFERENCES comments(id),
-                          FOREIGN KEY (post_id) REFERENCES posts(id),
-                          FOREIGN KEY (user_id) REFERENCES users(id)
+                          FOREIGN KEY (post_id)   REFERENCES posts(id),
+                          FOREIGN KEY (user_id)   REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE post_tags (
-                           post_id       BIGINT       NOT NULL,
-                           tag_id        BIGINT       NOT NULL,
+                           post_id BIGINT NOT NULL,
+                           tag_id  BIGINT NOT NULL,
                            PRIMARY KEY (post_id, tag_id),
                            FOREIGN KEY (post_id) REFERENCES posts(id),
-                           FOREIGN KEY (tag_id) REFERENCES tags(id)
+                           FOREIGN KEY (tag_id)  REFERENCES tags(id)
 ) ENGINE=InnoDB;
 
 -- 6. Mapping & RBAC
 CREATE TABLE expert_countries (
-                                  expert_id     BIGINT       NOT NULL,
-                                  country_id    BIGINT       NOT NULL,
+                                  expert_id  BIGINT NOT NULL,
+                                  country_id BIGINT NOT NULL,
                                   PRIMARY KEY (expert_id, country_id),
-                                  FOREIGN KEY (expert_id) REFERENCES expert_profiles(id),
-                                  FOREIGN KEY (country_id) REFERENCES countries(id)
+                                  FOREIGN KEY (expert_id)  REFERENCES expert_profiles(id),
+                                  FOREIGN KEY (country_id)  REFERENCES countries(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE user_roles (
-                            user_id       BIGINT       NOT NULL,
-                            role_id       BIGINT       NOT NULL,
+                            user_id BIGINT NOT NULL,
+                            role_id BIGINT NOT NULL,
                             PRIMARY KEY (user_id, role_id),
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (role_id) REFERENCES roles(id)
@@ -243,10 +243,10 @@ CREATE TABLE appointments (
                               phone            VARCHAR(20)  NOT NULL,
                               status           VARCHAR(50)  NOT NULL,
                               expert_id        BIGINT       NOT NULL,
-                              user_id          BIGINT       ,
+                              user_id          BIGINT,
                               PRIMARY KEY (id),
                               FOREIGN KEY (expert_id) REFERENCES users(id),
-                              FOREIGN KEY (user_id) REFERENCES users(id)
+                              FOREIGN KEY (user_id)   REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE consultation_notes (
@@ -260,7 +260,7 @@ CREATE TABLE consultation_notes (
                                     expert_id      BIGINT       NOT NULL,
                                     PRIMARY KEY (id),
                                     FOREIGN KEY (appointment_id) REFERENCES appointments(id),
-                                    FOREIGN KEY (expert_id) REFERENCES expert_profiles(id)
+                                    FOREIGN KEY (expert_id)       REFERENCES expert_profiles(id)
 ) ENGINE=InnoDB;
 
 -- 8. Subscriptions & billing
@@ -277,7 +277,7 @@ CREATE TABLE user_subscriptions (
                                     user_id       BIGINT       NOT NULL,
                                     PRIMARY KEY (id),
                                     FOREIGN KEY (package_id) REFERENCES subscription_packages(id),
-                                    FOREIGN KEY (user_id) REFERENCES users(id)
+                                    FOREIGN KEY (user_id)       REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE invoices (
@@ -296,7 +296,7 @@ CREATE TABLE invoices (
                           user_id        BIGINT       NOT NULL,
                           PRIMARY KEY (id),
                           FOREIGN KEY (package_id) REFERENCES subscription_packages(id),
-                          FOREIGN KEY (user_id) REFERENCES users(id)
+                          FOREIGN KEY (user_id)       REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE invoice_items (
@@ -316,25 +316,34 @@ CREATE TABLE invoice_items (
                                FOREIGN KEY (invoice_id) REFERENCES invoices(id)
 ) ENGINE=InnoDB;
 
+-- Updated Payments table
 CREATE TABLE payments (
-                          id              BIGINT       NOT NULL AUTO_INCREMENT,
-                          created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                          deleted_at      DATETIME     NULL,
-                          is_deleted      BIT          NOT NULL DEFAULT b'0',
-                          updated_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                          bank_code       VARCHAR(255),
-                          card_type       VARCHAR(255),
-                          paid_at         DATETIME,
-                          provider        VARCHAR(255),
-                          response_code   VARCHAR(255),
-                          status          VARCHAR(50),
-                          transaction_id  VARCHAR(255),
-                          invoice_id      BIGINT       NOT NULL,
-                          user_id         BIGINT       NOT NULL,
+                          id               BIGINT       NOT NULL AUTO_INCREMENT,
+                          created_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          deleted_at       DATETIME     NULL,
+                          is_deleted       BIT          NOT NULL DEFAULT b'0',
+                          updated_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+                          provider         VARCHAR(255) NOT NULL,
+                          checkout_url     VARCHAR(512),
+                          payment_link_id  VARCHAR(255),
+                          transaction_id   VARCHAR(255),
+                          response_signature VARCHAR(128),
+                          bank_code        VARCHAR(255),
+                          card_type        VARCHAR(255),
+                          paid_at          DATETIME,
+                          status           VARCHAR(50)  NOT NULL,
+                          response_code    VARCHAR(255),
+
+                          invoice_id       BIGINT       NOT NULL,
+                          user_id          BIGINT       NOT NULL,
+
                           PRIMARY KEY (id),
                           UNIQUE KEY uq_payments_invoice (invoice_id),
+                          INDEX idx_payments_user (user_id),
+
                           FOREIGN KEY (invoice_id) REFERENCES invoices(id),
-                          FOREIGN KEY (user_id) REFERENCES users(id)
+                          FOREIGN KEY (user_id)       REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 -- 9. Logs & feedback & chat
@@ -381,6 +390,6 @@ CREATE TABLE chats (
                        sender_id     BIGINT       NOT NULL,
                        receiver_id   BIGINT       NOT NULL,
                        PRIMARY KEY (id),
-                       FOREIGN KEY (sender_id) REFERENCES users(id),
+                       FOREIGN KEY (sender_id)   REFERENCES users(id),
                        FOREIGN KEY (receiver_id) REFERENCES users(id)
 ) ENGINE=InnoDB;
