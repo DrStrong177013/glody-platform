@@ -34,8 +34,6 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
-server:
-  port: 8080
 
 jwt:
   secret: secret-key-change-this
