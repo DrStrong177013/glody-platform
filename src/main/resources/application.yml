@@ -40,8 +40,8 @@ server:
   port: 8080
   ssl:
     enabled: true
-    key-store: classpath:keystore/keystore.p12
-    key-store-password: password
+    key-store-provider: sslStoreProvider
+    key-store-password: ${SSL_KEYSTORE_PASSWORD}
     key-store-type: PKCS12
 
 jwt:
