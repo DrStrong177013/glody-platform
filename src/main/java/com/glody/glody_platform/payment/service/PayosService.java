@@ -88,7 +88,7 @@ public class PayosService {
     public boolean validateSignature(PayosWebhookRequest webhookRequest) {
         PayosNotificationData d = webhookRequest.getData();
         String stringToSign = buildStringToSign(d);
-        String calculatedSignature = hmacHex(stringToSign, this.checksumKey); // Phải là checksum key của bạn!
+        String calculatedSignature = hmacHex(stringToSign, "cc085211e7d008940e43cd45e807751c929fc1b34c403a396e037dbc56a28669"); // Phải là checksum key của bạn!
         return calculatedSignature.equalsIgnoreCase(webhookRequest.getSignature());
     }
 
