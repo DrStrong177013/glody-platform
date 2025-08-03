@@ -51,27 +51,6 @@ public class PayosService {
                 .block();
     }
 
-    private String hmacHex(String data, String key) {
-        try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            for (byte b : raw) sb.append(String.format("%02x", b));
-            return sb.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public boolean validateSignature(PayosWebhookRequest webhookRequest) {
-        PayosNotificationData d = webhookRequest.getData();
-        String stringToSign = buildStringToSign(d);
-        String calculatedSignature = hmacHex(stringToSign, this.checksumKey);
-        return calculatedSignature.equalsIgnoreCase(webhookRequest.getSignature());
-    }
-
     public String buildStringToSign(PayosNotificationData data) {
         StringBuilder sb = new StringBuilder();
         sb.append("orderCode=").append(data.getOrderCode() == null ? "" : data.getOrderCode());
@@ -92,5 +71,30 @@ public class PayosService {
         sb.append("&virtualAccountNumber=").append(data.getVirtualAccountNumber() == null ? "" : data.getVirtualAccountNumber());
         return sb.toString();
     }
+
+    private String hmacHex(String data, String key) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : raw) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean validateSignature(PayosWebhookRequest webhookRequest) {
+        PayosNotificationData d = webhookRequest.getData();
+        String stringToSign = buildStringToSign(d);
+        String calculatedSignature = hmacHex(stringToSign, this.checksumKey); // Phải là checksum key của bạn!
+        return calculatedSignature.equalsIgnoreCase(webhookRequest.getSignature());
+    }
+
+
+
+
+
 
 }
