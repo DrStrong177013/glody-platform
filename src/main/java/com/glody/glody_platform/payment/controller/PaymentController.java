@@ -1,5 +1,6 @@
 package com.glody.glody_platform.payment.controller;
 
+import com.glody.glody_platform.common.ErrorResponse;
 import com.glody.glody_platform.payment.dto.CreateInvoiceRequestDto;
 import com.glody.glody_platform.payment.dto.InvoiceResponseDto;
 import com.glody.glody_platform.payment.service.PaymentService;
@@ -35,6 +36,7 @@ public class PaymentController {
     public ResponseEntity<?> handlePayosWebhook(@RequestBody Webhook webhookRequest) {
         boolean ok = paymentService.handlePayosWebhook(webhookRequest);
         if (ok) return ResponseEntity.ok().build();
-        return ResponseEntity.badRequest().body("Invalid signature");
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("Signature is invalid or request is not trusted!"));
     }
 }
