@@ -97,6 +97,83 @@ public class UserSubscriptionService {
         return UserSubscriptionMapper.toDto(userSubscriptionRepository.save(sub));
     }
 
+    /**
+     * Kiểm tra xem người dùng có đang sử dụng gói nào không,
+     * đã hết hạn chưa, gói mới so với gói cũ (cao/thấp hơn), có thể đăng ký không?
+     * @param userId user
+     * @param requestedPackageId id gói muốn mua
+     * @throws BusinessLogicException nếu vi phạm logic đăng ký gói
+     */
+    public void validateSubscriptionUpgrade(Long userId, Long requestedPackageId) {
+        SubscriptionPackage requestedPackage = subscriptionPackageRepository.findById(requestedPackageId)
+                .orElseThrow(() -> new RuntimeException("Package not found"));
+
+        // Tìm tất cả gói đang active của user (chưa expired, chưa xóa)
+        List<UserSubscription> activeSubs = userSubscriptionRepository.findAllByUserIdAndIsActiveTrue(userId);
+
+        for (UserSubscription sub : activeSubs) {
+            SubscriptionPackage currentPackage = sub.getSubscriptionPackage();
+            // ❌ Đang dùng chính gói này và còn hiệu lực
+            if (currentPackage.getId().equals(requestedPackage.getId())) {
+                throw new BusinessLogicException(
+                        "Bạn đã đăng ký gói này và đang còn hiệu lực đến: " + sub.getEndDate()
+                );
+            }
+            // ❌ Gói mới thấp hơn gói đang dùng
+            if (requestedPackage.getPrice() < currentPackage.getPrice()) {
+                throw new IllegalStateException(
+                        "Không thể đăng ký gói thấp hơn (" + requestedPackage.getName() +
+                                ") khi bạn đang dùng gói cao hơn (" + currentPackage.getName() + ")."
+                );
+            }
+        }
+    }
+
+    /**
+     * Đăng ký gói subscription mới cho user — chỉ gọi khi validateSubscriptionUpgrade đã pass!
+     */
+    @Transactional
+    public UserSubscriptionResponseDto registerSubscription(Long userId, Long packageId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        SubscriptionPackage subscriptionPackage = subscriptionPackageRepository.findById(packageId)
+                .orElseThrow(() -> new RuntimeException("Package not found"));
+
+        // Hủy/hết hạn các gói đang active trước đó
+        expireActiveSubscriptions(userId);
+
+        LocalDate start = LocalDate.now();
+        LocalDate end = start.plusDays(subscriptionPackage.getDurationDays());
+
+        UserSubscription newSub = new UserSubscription();
+        newSub.setUser(user);
+        newSub.setSubscriptionPackage(subscriptionPackage);
+        newSub.setStartDate(start);
+        newSub.setEndDate(end);
+        newSub.setIsActive(true);
+        newSub.setIsDeleted(false);
+
+        UserSubscription savedSub = userSubscriptionRepository.save(newSub);
+        return UserSubscriptionMapper.toDto(savedSub);
+    }
+
+    /**
+     * Hủy/hết hạn các subscription đang còn hiệu lực cho user.
+     */
+    @Transactional
+    public void expireActiveSubscriptions(Long userId) {
+        List<UserSubscription> activeSubs = userSubscriptionRepository.findAllByUserIdAndIsActiveTrue(userId);
+        LocalDate today = LocalDate.now();
+
+        for (UserSubscription sub : activeSubs) {
+            sub.setIsActive(false);
+            sub.setEndDate(today); // hết hạn ngay tại thời điểm đăng ký gói mới
+        }
+        userSubscriptionRepository.saveAll(activeSubs);
+
+        // Nếu user không còn gói active nào, có thể gán gói FREE ở đây nếu cần (optional)
+    }
+
 
 
 
