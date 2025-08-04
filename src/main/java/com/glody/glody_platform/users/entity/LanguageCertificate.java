@@ -19,11 +19,11 @@ public class LanguageCertificate extends BaseEntity {
     private UserProfile profile;
 
     @Column(nullable = false)
-    private String certificateName;   // Ex: TOEIC, IELTS, TOCFL
+    private String certificateName;
 
     @Column(nullable = false)
-    private String skill;             // Ex: Listening, Reading, Speaking
+    private String skill;
 
-    private Double score;            // Ex: 800, 6.5
-    private String resultLevel;       // Ex: A2, B1, C1
+    private Double score;
+    private String resultLevel;
 }

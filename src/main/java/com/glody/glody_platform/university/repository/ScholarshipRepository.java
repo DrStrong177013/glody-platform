@@ -14,4 +14,6 @@ public interface ScholarshipRepository extends JpaRepository<Scholarship, Long>,
             "JOIN FETCH s.school sc " +
             "LEFT JOIN FETCH sc.programs")
     List<Scholarship> findAllWithSchoolAndPrograms();
+    @Query("SELECT s FROM Scholarship s WHERE s.deletedAt IS NULL AND s.isDeleted = false")
+    List<Scholarship> findAllActive();
 }

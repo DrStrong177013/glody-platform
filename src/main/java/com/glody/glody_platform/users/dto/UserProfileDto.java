@@ -1,5 +1,6 @@
 package com.glody.glody_platform.users.dto;
 
+import com.glody.glody_platform.users.entity.UserProfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DTO chứa thông tin hồ sơ cá nhân của người dùng.
@@ -18,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfileDto {
-
+    private Long id;
     @Schema(description = "Họ tên đầy đủ", example = "Người Dùng Thử")
     @NotBlank(message = "Họ tên không được để trống")
     private String fullName;
@@ -52,6 +54,22 @@ public class UserProfileDto {
     @Schema(description = "URL ảnh đại diện", example = "https://cdn.glody.vn/avatar.jpg")
     private String avatarUrl;
 
-//    @Schema(description = "Danh sách chứng chỉ ngôn ngữ của người dùng")
-//    private List<LanguageCertificateDto> languageCertificates;
+    @Schema(description = "Danh sách chứng chỉ ngôn ngữ của người dùng")
+    private List<LanguageCertificateDto> languageCertificates;
+
+    public UserProfileDto(UserProfile profile) {
+        this.id = profile.getId();
+        this.fullName = profile.getFullName();
+        this.major = profile.getMajor();
+        this.targetCountry = profile.getTargetCountry();
+        this.gpa = profile.getGpa();
+        // ... mapping các field khác ...
+
+        // Map list chứng chỉ ngôn ngữ (nếu có)
+        if (profile.getLanguageCertificates() != null) {
+            this.languageCertificates = profile.getLanguageCertificates().stream()
+                    .map(LanguageCertificateDto::new)
+                    .collect(Collectors.toList());
+        }
+    }
 }

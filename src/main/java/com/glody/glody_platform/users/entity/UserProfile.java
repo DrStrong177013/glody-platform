@@ -46,6 +46,7 @@ public class UserProfile extends BaseEntity {
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LanguageCertificate> languageCertificates = new ArrayList<>();
+
 @Column(name = "second_language_certificate")
     private String secondLanguageCertificate;
 @Column(name = "extracurricular_activities")

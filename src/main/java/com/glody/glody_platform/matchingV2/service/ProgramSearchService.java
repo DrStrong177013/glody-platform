@@ -130,7 +130,7 @@ public class ProgramSearchService {
                 .filter(d -> d.getMatchPercentage() >= 50.0)
                 .count();
         MatchingSummary summary = MatchingSummary.builder()
-                .totalPrograms(total)
+                .totals(total)
                 .matchedCount(matched)
                 .averageMatch(BigDecimal.valueOf(avg)
                         .setScale(2, RoundingMode.HALF_UP)

@@ -6,6 +6,7 @@ import com.glody.glody_platform.matchingV2.dto.ProgramSearchResponse;
 import com.glody.glody_platform.matchingV2.service.ProgramSearchService;
 import com.glody.glody_platform.common.ErrorResponse;
 import com.glody.glody_platform.users.entity.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springdoc.core.annotations.ParameterObject;
 import java.security.Principal;
 import java.util.List;
-
+@Hidden
 @RestController
 @RequestMapping("/api/search/programs")
 @Tag(name = "Matching Controller V2", description = "Tìm các chương trình, trường học, học bổng phù hợp")

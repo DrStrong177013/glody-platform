@@ -6,14 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Map;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MatchingSummary {
-    private int   totals;
-    private int   matchedCount;
-    private double averageMatch;
+public class ScholarshipSearchResponse {
+    private MatchingSummary summary;
+    private List<ScholarshipDto> scholarships;
+    private List<String> recommendations; // Gợi ý chung cho toàn bộ kết quả
 }

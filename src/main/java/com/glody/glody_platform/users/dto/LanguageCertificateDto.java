@@ -1,5 +1,6 @@
 package com.glody.glody_platform.users.dto;
 
+import com.glody.glody_platform.users.entity.LanguageCertificate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
@@ -33,4 +34,10 @@ public class LanguageCertificateDto {
 
     @Schema(description = "Trình độ kết quả (nếu có)", example = "null")
     private String resultLevel;
+
+    public LanguageCertificateDto(LanguageCertificate entity) {
+        this.certificateName = entity.getCertificateName();
+        this.score = entity.getScore();
+    }
 }
+
