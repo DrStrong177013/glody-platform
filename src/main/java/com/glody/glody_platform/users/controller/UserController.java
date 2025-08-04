@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@Tag(name = "User Controller", description = "Quản lý hồ sơ người dùng")
+@Tag(name = "User Controller", description = "Quản lý cá nhân người dùng")
 public class UserController {
 
     private final UserProfileService userProfileService;
