@@ -33,9 +33,11 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
-
-server:
-  port: 9876
+servers:
+  - url: http://localhost:9876/api
+    description: Local Dev Server
+  - url: https://pog.threemusketeer.click/api
+    description: Production Server
 
 springdoc:
   swagger-ui:
@@ -54,4 +56,7 @@ payos:
   client-id:    ${PAYOS_CLIENT_ID:757c90c4-63da-4d1f-8d70-041bee93be81}
   api-key:      ${PAYOS_API_KEY:0f7d0e96-672c-4698-9337-a122daf6aa1f}
   checksum-key: ${PAYOS_CHECKSUM_KEY:cc085211e7d008940e43cd45e807751c929fc1b34c403a396e037dbc56a28669}
+  partner-code: ""
   base-url:     https://api-merchant.payos.vn
+server:
+  port: 9876

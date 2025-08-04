@@ -4,9 +4,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import vn.payos.PayOS;
+import vn.payos.type.ItemData;
+import vn.payos.type.PaymentData;
 import vn.payos.type.Webhook;
 import com.glody.glody_platform.payment.dto.CreatePaymentRequest;
 import com.glody.glody_platform.payment.dto.CreatePaymentResponse;
+
+import java.util.List;
 
 @Service
 public class PayosService {
@@ -14,6 +18,7 @@ public class PayosService {
     private final PayOS payOS;
     private final String clientId;
     private final String apiKey;
+
 
     public PayosService(
             @Value("${payos.client-id}") String clientId,
@@ -29,13 +34,12 @@ public class PayosService {
         this.payOS = new PayOS(clientId, apiKey, checksumKey);
     }
 
-    public CreatePaymentResponse createLink(Long orderCode, Long amount, String returnUrl, String cancelUrl) {
-        CreatePaymentRequest req = new CreatePaymentRequest();
-        req.setOrderCode(orderCode);
-        req.setAmount(amount);
-        req.setDescription("INV#" + orderCode);
-        req.setReturnUrl(returnUrl);
-        req.setCancelUrl(cancelUrl);
+    public CreatePaymentResponse createLink(Long orderCode, int amount,String descripton,ItemData itemData, String returnUrl, String cancelUrl) {
+
+
+        PaymentData req = PaymentData.builder().orderCode(orderCode).amount(amount)
+                .description("Người dùng " +descripton).returnUrl(returnUrl).cancelUrl(cancelUrl)
+                .item(itemData).build();
 
         return payosWebClient.post()
                 .uri("/v2/payment-requests")

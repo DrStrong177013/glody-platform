@@ -14,7 +14,7 @@ public class InvoiceResponseDto {
     private String        status;
     private LocalDateTime createdAt;
     private LocalDateTime expiredAt;
-    private String        checkoutUrl;  // ← Thêm trường này
+    private String        checkoutUrl;
 }
 
 

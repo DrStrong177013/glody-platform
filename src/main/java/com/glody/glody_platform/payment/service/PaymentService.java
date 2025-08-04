@@ -8,8 +8,9 @@ import com.glody.glody_platform.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.payos.type.Webhook;
-import vn.payos.type.WebhookData;
+import vn.payos.PayOS;
+import vn.payos.type.*;
+import vn.payos.type.ItemData;
 
 @Service
 @RequiredArgsConstructor
@@ -17,25 +18,42 @@ public class PaymentService {
     private final InvoiceService invoiceService;
     private final PayosService payosService;
     private final PaymentRepository paymentRepository;
+    private final PayOS payos;
 
     @Transactional
     public InvoiceResponseDto createInvoiceAndPayment(CreateInvoiceRequestDto dto, Long userId) {
         Invoice invoice = invoiceService.createInvoice(dto, userId);
+        ItemData itemData = ItemData.builder()
+                .name(invoice.getNote())
+                .quantity(1)
+                .price(invoice.getTotalAmount().intValue())
+                .build();
 
-        CreatePaymentResponse payResp = payosService.createLink(
-                invoice.getId(),
-                invoice.getTotalAmount().longValue(),
-                dto.getReturnUrl(),
-                dto.getCancelUrl()
-        );
-        String checkoutUrl = payResp.getData().getCheckoutUrl();
+        PaymentData paymentData = PaymentData.builder()
+                .orderCode(Long.parseLong(invoice.getCode()))
+                .amount(invoice.getTotalAmount().intValue())
+                .description(invoice.getNote())
+                .returnUrl(dto.getReturnUrl())
+                .cancelUrl(dto.getCancelUrl())
+                .item(itemData)
+                .build();
+
+        CheckoutResponseData response;
+        try {
+            response = payos.createPaymentLink(paymentData);
+        } catch (Exception ex) {
+            throw new RuntimeException("Gọi PayOS thất bại: " + ex.getMessage(), ex);
+        }
+        if (response == null || response.getCheckoutUrl() == null) {
+            throw new RuntimeException("Không tạo được link thanh toán, vui lòng thử lại!");
+        }
 
         Payment payment = new Payment();
         payment.setInvoice(invoice);
         payment.setUser(invoice.getUser());
         payment.setProvider("PayOS");
         payment.setStatus(PaymentStatus.PENDING);
-        payment.setCheckoutUrl(checkoutUrl);
+        payment.setCheckoutUrl(response.getCheckoutUrl());
         payment.setTransactionId(invoice.getCode());
         paymentRepository.save(payment);
 
@@ -48,10 +66,11 @@ public class PaymentService {
         res.setStatus(invoice.getStatus().name());
         res.setCreatedAt(invoice.getCreatedAt());
         res.setExpiredAt(invoice.getExpiredAt());
-        res.setCheckoutUrl(checkoutUrl);
+        res.setCheckoutUrl(response.getCheckoutUrl());
 
         return res;
     }
+
 
     public boolean handlePayosWebhook(Webhook webhookRequest) {
         if (!payosService.validateWebhook(webhookRequest)) {
