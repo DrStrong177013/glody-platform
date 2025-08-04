@@ -85,8 +85,12 @@ public class PaymentService {
             Payment payment = paymentOpt.get();
             payment.setStatus(newStatus);
             payment.setResponseSignature(webhookRequest.getSignature());
-            payment.setBankCode("on DEV");
+            payment.setBankCode(webhookRequest.getData().getCounterAccountBankName());
+            payment.setCardType("on DEV");
             payment.setPaidAt(LocalDateTime.now());
+            payment.setResponseCode(webhookRequest.getData().getCode());
+            payment.setPaymentLinkId(webhookRequest.getData().getPaymentLinkId());
+
             paymentRepository.save(payment);
             System.out.println("UpdatePayment by Webhook " + payment);
         } else {

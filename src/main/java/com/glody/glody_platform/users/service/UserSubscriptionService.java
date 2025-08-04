@@ -115,12 +115,19 @@ public class UserSubscriptionService {
             SubscriptionPackage currentPackage = sub.getSubscriptionPackage();
             // ❌ Đang dùng chính gói này và còn hiệu lực
             if (currentPackage.getId().equals(requestedPackage.getId())) {
+                System.out.println(
+                        "Bạn đã đăng ký gói này và đang còn hiệu lực đến: " + sub.getEndDate()
+                );
                 throw new BusinessLogicException(
                         "Bạn đã đăng ký gói này và đang còn hiệu lực đến: " + sub.getEndDate()
                 );
             }
             // ❌ Gói mới thấp hơn gói đang dùng
             if (requestedPackage.getPrice() < currentPackage.getPrice()) {
+                System.out.println(
+                        "Không thể đăng ký gói thấp hơn (" + requestedPackage.getName() +
+                                ") khi bạn đang dùng gói cao hơn (" + currentPackage.getName() + ")."
+                );
                 throw new IllegalStateException(
                         "Không thể đăng ký gói thấp hơn (" + requestedPackage.getName() +
                                 ") khi bạn đang dùng gói cao hơn (" + currentPackage.getName() + ")."
