@@ -73,13 +73,21 @@ public class PaymentService {
 
 
     public boolean handlePayosWebhook(Webhook webhookRequest) {
+        // Log payload nhận về (nên log ở mức info/debug, không log signature ra file log production)
+        System.out.println("PayOS Webhook received: " + webhookRequest);
+
         if (!payosService.validateWebhook(webhookRequest)) {
+            // Log cảnh báo sai signature
+            System.out.println("PayOS Webhook signature invalid: " + webhookRequest);
             return false;
         }
         WebhookData data = webhookRequest.getData();
+
+        // Có thể kiểm tra trạng thái hóa đơn hiện tại, tránh update lặp nếu đã xử lý
         invoiceService.updateInvoiceStatus(data.getOrderCode(), data.getCode());
         return true;
     }
+
 
 
 }
