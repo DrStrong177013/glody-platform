@@ -35,6 +35,7 @@ public class PublicEndpoints {
             "/api/search/programs",
             "/api/search/programs/*"
 
+
     };
 
     public static final String[] POST_ENDPOINTS = {

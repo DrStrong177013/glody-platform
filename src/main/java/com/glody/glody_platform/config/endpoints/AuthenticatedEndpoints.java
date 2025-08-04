@@ -4,11 +4,16 @@ public class AuthenticatedEndpoints {
     public static final String[] ALL_ENDPOINTS = {
             "/api/comments/**",
             "/api/chats/**",
-            "/api/users/me/roles",
             "/api/feedbacks",
             "/api/invoices",
             "/api/invoices/**",
-            "/api/user-profiles/**",
+            "/api/matching/**",
+            "/api/user/**",
+            "/api/invoices",
+            "/api/payments",
+            "/api/invoices/*",
+            "/api/payments/*",
+
 
 
     };

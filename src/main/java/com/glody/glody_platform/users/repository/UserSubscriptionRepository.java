@@ -42,6 +42,8 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
     List<UserSubscription> findBySubscriptionPackageId(Long packageId);
     @Query("SELECT u.subscriptionPackage.id, COUNT(u), SUM(CASE WHEN u.isActive = true THEN 1 ELSE 0 END), SUM(CASE WHEN u.isActive = false THEN 1 ELSE 0 END) FROM UserSubscription u GROUP BY u.subscriptionPackage.id")
     List<Object[]> countUserStatsByPackage();
+    List<UserSubscription> findByUserId(Long userId);
+    List<UserSubscription> findByUserIdAndIsActiveTrue(Long userId);
 
 
 

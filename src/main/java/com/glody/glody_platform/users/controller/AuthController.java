@@ -133,13 +133,7 @@ public class AuthController {
 
         return dto;
     }
-    @GetMapping("/me/roles")
-    @Operation(summary = "Lấy role của người dùng hiện tại")
-    public List<String> getCurrentUserRoles(@AuthenticationPrincipal User currentUser) {
-        return currentUser.getRoles().stream()
-                .map(role -> "ROLE_" + role.getRoleName().toUpperCase())
-                .toList();
-    }
+
 }
 
 @Getter

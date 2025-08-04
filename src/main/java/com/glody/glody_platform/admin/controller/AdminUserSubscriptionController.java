@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/admin/user-subscriptions")
 @RequiredArgsConstructor
 @Tag(name = "Admin User Subscription Controller", description = "Admin quản lý các gói đăng ký của người dùng cho 1 số trường hợp đặc biệt liên quan đến thanh toán")
-public class UserSubscriptionController {
+public class AdminUserSubscriptionController {
 
     private final UserSubscriptionService userSubscriptionService;
 

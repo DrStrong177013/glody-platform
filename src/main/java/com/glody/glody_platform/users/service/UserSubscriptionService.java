@@ -1,10 +1,7 @@
 package com.glody.glody_platform.users.service;
 
 import com.glody.glody_platform.common.exception.BusinessLogicException;
-import com.glody.glody_platform.users.dto.SubscriptionValidationResult;
-import com.glody.glody_platform.users.dto.UserSubscriptionDto;
-import com.glody.glody_platform.users.dto.UserSubscriptionRequestDto;
-import com.glody.glody_platform.users.dto.UserSubscriptionResponseDto;
+import com.glody.glody_platform.users.dto.*;
 import com.glody.glody_platform.users.entity.SubscriptionPackage;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.entity.UserSubscription;
@@ -223,6 +220,29 @@ public class UserSubscriptionService {
                 userSubscriptionRepository.save(freeSub);
             });
         }
+    }
+
+    public List<UserSubscriptionPackageResponseDto> getAllSubscriptionsByUser(Long userId) {
+        return userSubscriptionRepository.findByUserId(userId)
+                .stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    public UserSubscriptionPackageResponseDto getActiveSubscriptionByUser(Long userId) {
+        return userSubscriptionRepository.findByUserIdAndIsActiveTrue(userId)
+                .stream().findFirst()
+                .map(this::mapToDto)
+                .orElse(null);
+    }
+    private UserSubscriptionPackageResponseDto mapToDto(UserSubscription us) {
+        UserSubscriptionPackageResponseDto dto = new UserSubscriptionPackageResponseDto();
+        dto.setId(us.getId());
+        dto.setPackageName(us.getSubscriptionPackage().getName());
+        dto.setStartDate(us.getStartDate());
+        dto.setEndDate(us.getEndDate());
+        dto.setIsActive(us.getIsActive());
+        dto.setIsExpired(us.getEndDate() != null && us.getEndDate().isBefore(java.time.LocalDate.now()));
+        dto.setPrice(us.getSubscriptionPackage().getPrice());
+        return dto;
     }
 
     private UserSubscriptionDto toDto(UserSubscription sub) {

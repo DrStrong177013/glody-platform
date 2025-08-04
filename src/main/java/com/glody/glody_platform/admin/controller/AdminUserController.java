@@ -1,7 +1,6 @@
 package com.glody.glody_platform.admin.controller;
 
 import com.glody.glody_platform.common.PageResponse;
-import com.glody.glody_platform.users.dto.UserDto;
 import com.glody.glody_platform.users.dto.UserResponseDto;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.repository.UserRepository;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
 @Tag(name = "Admin User Controller", description = "Admin Quản lý người dùng")
-public class UserController {
+public class AdminUserController {
 
     private final UserRepository userRepository;
     private final UserService userService;
