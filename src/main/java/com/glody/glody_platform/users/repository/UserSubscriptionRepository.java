@@ -39,6 +39,9 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
     Optional<UserSubscription> findActiveByUserId(@Param("userId") Long userId, @Param("date") LocalDate date);
     @Query ("SELECT s FROM UserSubscription s WHERE s.user.id = :userId AND s.startDate <= :date AND s.endDate >= :date ")
     List<UserSubscription> findAllActiveByUserId(Long userId, LocalDate date);
+    List<UserSubscription> findBySubscriptionPackageId(Long packageId);
+    @Query("SELECT u.subscriptionPackage.id, COUNT(u), SUM(CASE WHEN u.isActive = true THEN 1 ELSE 0 END), SUM(CASE WHEN u.isActive = false THEN 1 ELSE 0 END) FROM UserSubscription u GROUP BY u.subscriptionPackage.id")
+    List<Object[]> countUserStatsByPackage();
 
 
 

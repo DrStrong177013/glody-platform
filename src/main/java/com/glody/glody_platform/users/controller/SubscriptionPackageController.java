@@ -72,38 +72,38 @@ public class SubscriptionPackageController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Tạo mới gói đăng ký (Admin)")
-    @PostMapping
-    public ResponseEntity<SubscriptionPackageDto> create(
-            @Valid @RequestBody SubscriptionPackageRequestDto request
-    ) {
-        SubscriptionPackage entity = mapper.toEntity(request);
-        SubscriptionPackage saved = repo.save(entity);
-        return ResponseEntity.ok(mapper.toDto(saved));
-    }
+//    @Operation(summary = "Tạo mới gói đăng ký (Admin)")
+//    @PostMapping
+//    public ResponseEntity<SubscriptionPackageDto> create(
+//            @Valid @RequestBody SubscriptionPackageRequestDto request
+//    ) {
+//        SubscriptionPackage entity = mapper.toEntity(request);
+//        SubscriptionPackage saved = repo.save(entity);
+//        return ResponseEntity.ok(mapper.toDto(saved));
+//    }
 
-    @Operation(summary = "Cập nhật thông tin gói đăng ký (Admin)")
-    @PutMapping("/{id}")
-    public ResponseEntity<SubscriptionPackageDto> update(
-            @PathVariable Long id,
-            @Valid @RequestBody SubscriptionPackageRequestDto request
-    ) {
-        return repo.findById(id)
-                .map(existing -> {
-                    mapper.updateFromDto(request, existing);
-                    SubscriptionPackage saved = repo.save(existing);
-                    return ResponseEntity.ok(mapper.toDto(saved));
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy gói đăng ký id=" + id));
-    }
+//    @Operation(summary = "Cập nhật thông tin gói đăng ký (Admin)")
+//    @PutMapping("/{id}")
+//    public ResponseEntity<SubscriptionPackageDto> update(
+//            @PathVariable Long id,
+//            @Valid @RequestBody SubscriptionPackageRequestDto request
+//    ) {
+//        return repo.findById(id)
+//                .map(existing -> {
+//                    mapper.updateFromDto(request, existing);
+//                    SubscriptionPackage saved = repo.save(existing);
+//                    return ResponseEntity.ok(mapper.toDto(saved));
+//                })
+//                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy gói đăng ký id=" + id));
+//    }
 
-    @Operation(summary = "Xóa gói đăng ký theo ID (Admin)")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!repo.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        repo.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @Operation(summary = "Xóa gói đăng ký theo ID (Admin)")
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> delete(@PathVariable Long id) {
+//        if (!repo.existsById(id)) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        repo.deleteById(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }

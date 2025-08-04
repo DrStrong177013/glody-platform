@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 @Setter
-
 public abstract class BaseEntity {
     @Id
 //    @GeneratedValue(strategy = GenerationType.UUID)
