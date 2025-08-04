@@ -12,6 +12,8 @@ import vn.payos.PayOS;
 import vn.payos.type.*;
 import vn.payos.type.ItemData;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -70,6 +72,18 @@ public class PaymentService {
 
         return res;
     }
+    @Transactional
+    public void updatePaymentStatusByOrderCode(Long orderCode, PaymentStatus newStatus) {
+        Optional<Payment> paymentOpt = paymentRepository.findByTransactionId(orderCode.toString());
+        if (paymentOpt.isPresent()) {
+            Payment payment = paymentOpt.get();
+            payment.setStatus(newStatus);
+            paymentRepository.save(payment);
+        } else {
+            // Có thể log cảnh báo nếu không tìm thấy payment
+            System.out.println("Payment not found for orderCode: " + orderCode);
+        }
+    }
 
 
     public boolean handlePayosWebhook(Webhook webhookRequest) {
@@ -85,6 +99,9 @@ public class PaymentService {
 
         // Có thể kiểm tra trạng thái hóa đơn hiện tại, tránh update lặp nếu đã xử lý
         invoiceService.updateInvoiceStatus(data.getOrderCode(), data.getCode());
+        // Cập nhật trạng thái payment
+        PaymentStatus paymentStatus = "00".equals(data.getCode()) ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
+        this.updatePaymentStatusByOrderCode(data.getOrderCode(), paymentStatus);
         return true;
     }
 

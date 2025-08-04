@@ -31,14 +31,6 @@ public class PaymentController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/hardcode")
-    public ResponseEntity<InvoiceResponseDto> hardcode(
-            @RequestBody CreateInvoiceRequestDto dto
-    ) {
-        Long userId = 1L;
-        InvoiceResponseDto res = paymentService.createInvoiceAndPayment(dto, userId);
-        return ResponseEntity.ok(res);
-    }
 
     // Nhận webhook từ PayOS
     @PostMapping("/webhook/payos")

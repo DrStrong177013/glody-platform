@@ -12,5 +12,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT p FROM Payment p WHERE p.invoice.user.id = :userId AND p.invoice.isDeleted = false ORDER BY p.paidAt DESC")
     List<Payment> findAllByUserId(@Param("userId") Long userId);
     Optional<Payment> findByInvoiceId(Long invoiceId);
+    Optional<Payment> findByTransactionId(String transactionId);
 
 }
