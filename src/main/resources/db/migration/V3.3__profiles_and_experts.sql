@@ -9,7 +9,7 @@ INSERT IGNORE INTO user_profiles
    target_semester, target_year, university_name, user_id)
 VALUES
   (1, NOW(), NULL, b'0', NOW(), NULL,'1980-01-01','Tiến sĩ','Nghiên cứu độc lập',
-   'Nguyễn Văn A', 3.9, 4,'Toán học','Việt Nam','IELTS 8.0','Anh','Học kỳ Thu',2025,'ĐHQGHN',1),
+   'Nguyễn Văn Tùng', 3.9, 4,'Toán học','Việt Nam','IELTS 8.0','Anh','Học kỳ Thu',2025,'ĐHQGHN',1),
   (2, NOW(), NULL, b'0', NOW(), NULL,'1985-03-20','Thạc sĩ','Giảng viên tự do',
    'Bob Chuyên gia',3.7,4,'Quản trị Kinh doanh','Hoa Kỳ','TOEFL 100','Mỹ','Học kỳ Xuân',2026,'MIT',2),
   (3, NOW(), NULL, b'0', NOW(), NULL,'2000-05-15','Tốt nghiệp THPT','Câu lạc bộ Anh ngữ',

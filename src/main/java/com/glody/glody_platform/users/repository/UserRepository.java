@@ -17,6 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByIsDeletedFalse(Sort sort);
     Page<User> findAllByIsDeletedFalse(Pageable pageable);
     Optional<User> findByEmail(String email);
+    Optional<User> findByResetPasswordToken(String token);
 
 
 

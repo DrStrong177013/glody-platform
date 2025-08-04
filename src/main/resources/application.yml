@@ -33,6 +33,18 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: manhtdse173612@fpt.edu.vn
+    password: cvymcpimkwjloiup
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 servers:
   - url: http://localhost:9876/api
     description: Local Dev Server

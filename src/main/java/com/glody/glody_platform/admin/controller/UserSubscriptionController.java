@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/user-subscriptions")
 @RequiredArgsConstructor
-@Tag(name = "Admin User Subscription Controller", description = "Quản lý các gói đăng ký người dùng cho 1 số trường hợp đặc biệt của ADMIN")
+@Tag(name = "Admin User Subscription Controller", description = "Admin quản lý các gói đăng ký người dùng cho 1 số trường hợp đặc biệt liên quan đến thanh toán")
 public class UserSubscriptionController {
 
     private final UserSubscriptionService userSubscriptionService;
@@ -97,13 +97,13 @@ public class UserSubscriptionController {
         return ResponseEntity.ok(response);
     }
 
-    // ❌ Xoá mềm (commented) – Nếu cần thì mở lại endpoint này.
-    /*
-    @Operation(summary = "Xoá mềm đăng ký của người dùng")
+
+    @Operation(summary = "Xoá mềm đăng ký của người dùng (Admin)",
+    description = "Hạn chế xóa mềm vì có thể gây ra lỗi không mong muốn.")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> softDelete(@PathVariable Long id) {
         userSubscriptionService.softDelete(id);
-        return ResponseEntity.ok("🗑️ Subscription soft deleted successfully.");
+        return ResponseEntity.ok("Subscription soft deleted successfully.");
     }
-    */
+
 }

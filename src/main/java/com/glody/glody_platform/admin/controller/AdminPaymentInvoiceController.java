@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@Tag(name = "Admin Payment Invoice Controller", description = "Admin quản lý và kiểm tra thanh toán, hóa đơn")
+@Tag(name = "Admin Payment Invoice Controller", description = "Admin kiểm tra thanh toán, hóa đơn")
 public class AdminPaymentInvoiceController {
     private final PaymentService paymentService;
     private final InvoiceService invoiceService;

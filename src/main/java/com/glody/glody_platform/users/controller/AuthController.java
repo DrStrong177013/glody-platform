@@ -1,9 +1,6 @@
 package com.glody.glody_platform.users.controller;
 
-import com.glody.glody_platform.users.dto.AuthRequestDto;
-import com.glody.glody_platform.users.dto.AuthResponseDto;
-import com.glody.glody_platform.users.dto.UserDto;
-import com.glody.glody_platform.users.dto.RegistrationResponseDto;
+import com.glody.glody_platform.users.dto.*;
 import com.glody.glody_platform.users.entity.User;
 import com.glody.glody_platform.users.entity.UserProfile;
 import com.glody.glody_platform.users.entity.UserSubscription;
@@ -39,7 +36,13 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
 
-    @Operation(summary = "Đăng nhập và nhận JWT token")
+    @Operation(summary = "Đăng nhập và nhận JWT token",
+    description = "Tài khoản đăng nhập mẫu (mk:String_1): " +
+            "  bob.expert@goldyai.com  (ROLE_EXPERT, gói FREE), " +
+            "  alice@gmail.com  (ROLE_STUDENT, gói FREE), " +
+            "  diana@gmail.com (ROLE_STUDENT, gói PREMIUM),  " +
+            "  edward@gmail.com (ROLE_STUDENT, gói BASIC), " +
+            "  charlie@gmail.com (ROLE_STUDENT, gói FREE) ")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDto request) {
         try {
@@ -71,7 +74,7 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Đăng ký STUDENT (tự gán gói FREE)")
+    @Operation(summary = "Đăng ký STUDENT", description = "Đăng ký xong sẽ tự gán package FREE và tạo hồ sơ cho người dùng")
     @PostMapping("/register/student")
     public ResponseEntity<RegistrationResponseDto> registerStudent(
             @Valid @RequestBody UserDto userDto) {
@@ -80,13 +83,32 @@ public class AuthController {
                 .body(buildResponse(user));
     }
 
-    @Operation(summary = "Đăng ký EXPERT (tự gán gói FREE)")
+    @Operation(summary = "Đăng ký EXPERT ", description = "Đăng ký xong sẽ tự gán package FREE và tạo hồ sơ cho người dùng")
     @PostMapping("/register/expert")
     public ResponseEntity<RegistrationResponseDto> registerExpert(
             @Valid @RequestBody UserDto userDto) {
         User user = userService.registerUser(userDto, true);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(buildResponse(user));
+    }
+
+    @Operation(summary = "Quên Mật khẩu, lấy lại với Email", description = "Nếu email hợp lệ, hướng dẫn reset sẽ được gửi đến email.")
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        userService.sendForgotPasswordEmail(request.getEmail());
+        return ResponseEntity.ok("Nếu email hợp lệ, hướng dẫn reset sẽ được gửi đến email.");
+    }
+
+    @Operation(summary = "Đổi mật khẩu", description = "Đổi mật khẩu với resetToken. Token lấy ở trên thanh URL" +
+            " sau khi bấm vào đường link RestPassword gửi ở email (thông qua api forgot-password)")
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        boolean result = userService.resetPassword(request.getToken(), request.getNewPassword());
+        if (result) {
+            return ResponseEntity.ok("Đổi mật khẩu thành công!");
+        } else {
+            return ResponseEntity.badRequest().body("Token không hợp lệ hoặc đã hết hạn!");
+        }
     }
 
     private RegistrationResponseDto buildResponse(User user) {

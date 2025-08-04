@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
-@Tag(name = "Admin User Controller", description = "Quản lý người dùng dành cho ADMIN")
+@Tag(name = "Admin User Controller", description = "Admin Quản lý người dùng")
 public class UserController {
 
     private final UserRepository userRepository;

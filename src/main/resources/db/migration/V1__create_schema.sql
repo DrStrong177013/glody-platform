@@ -75,9 +75,13 @@ CREATE TABLE users (
                        password_hash  VARCHAR(255) NOT NULL,
                        phone          VARCHAR(255),
                        status         BIT          NOT NULL DEFAULT b'1',
+                       reset_password_token VARCHAR(255),
+                       reset_password_expiry DATETIME,
+
                        PRIMARY KEY (id),
                        UNIQUE KEY uq_users_email (email)
 ) ENGINE=InnoDB;
+
 
 -- 3. Reference/master data
 CREATE TABLE universities (
