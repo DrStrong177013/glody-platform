@@ -61,4 +61,5 @@ public class ScholarshipMatchingController {
             return ResponseEntity.ok(result);
         }
     }
+
 }

@@ -3,6 +3,7 @@ package com.glody.glody_platform.matchingV2.controller;
 import com.glody.glody_platform.common.ErrorResponse;
 import com.glody.glody_platform.matchingV2.criteria.ProgramSearchCriteria;
 import com.glody.glody_platform.matchingV2.criteria.ScholarshipSearchCriteria;
+import com.glody.glody_platform.matchingV2.criteria.SchoolSearchCriteria;
 import com.glody.glody_platform.matchingV2.dto.*;
 import com.glody.glody_platform.matchingV2.service.*;
 import com.glody.glody_platform.users.entity.User;
@@ -27,6 +28,7 @@ public class MatchingControllerV2 {
 
     private final ProgramSearchService programSearchService;
     private final ScholarshipMatchingService scholarshipMatchingService;
+    private final SchoolMatchingService schoolMatchingService;
 
     @Operation(summary = "Tìm chương trình phù hợp",
             description = "Trả về danh sách chương trình phù hợp với hồ sơ, chỉ gồm thông tin cơ bản như id, tên học bổng, trường, giá trị học bổng, tỉ lệ phù hợp."
@@ -109,6 +111,19 @@ public class MatchingControllerV2 {
         return ResponseEntity.ok(response);
     }
 
-    // Nếu muốn gộp matching school hoặc API khác, bổ sung tại đây
+    @Operation(
+            summary = "Tìm kiếm trường học phù hợp",
+            description = "(OnDEV)Trả về danh sách trường học phù hợp với hồ sơ, gồm thông tin cơ bản: id, tên trường, quốc gia, logo, tỷ lệ phù hợp. Có thể lọc theo quốc gia, ngành, ranking, GPA..."
+    )
+    @GetMapping("/schools/light")
+    public ResponseEntity<List<SchoolLightDto>> matchSchoolsLight(
+            @ParameterObject @ModelAttribute SchoolSearchCriteria criteria,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        Long userId = currentUser.getId();
+        List<SchoolLightDto> result = schoolMatchingService.matchSchools(userId, criteria);
+        return ResponseEntity.ok(result);
+    }
+
 
 }
