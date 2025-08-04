@@ -1,12 +1,20 @@
 package com.glody.glody_platform.payment.service;
 
+import com.glody.glody_platform.common.PageResponse;
+import com.glody.glody_platform.common.exception.BusinessLogicException;
 import com.glody.glody_platform.payment.dto.*;
         import com.glody.glody_platform.payment.entity.Invoice;
 import com.glody.glody_platform.payment.entity.Payment;
 import com.glody.glody_platform.payment.enums.PaymentStatus;
+import com.glody.glody_platform.payment.repository.InvoiceRepository;
 import com.glody.glody_platform.payment.repository.PaymentRepository;
+import com.glody.glody_platform.users.dto.SubscriptionValidationResult;
 import com.glody.glody_platform.users.service.UserSubscriptionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.payos.PayOS;
@@ -14,6 +22,7 @@ import vn.payos.type.*;
         import vn.payos.type.ItemData;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,10 +33,14 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PayOS payos;
     private final UserSubscriptionService subService;
+    private final InvoiceRepository invoiceRepository;
 
     @Transactional
     public InvoiceResponseDto createInvoiceAndPayment(CreateInvoiceRequestDto dto, Long userId) {
-        subService.validateSubscriptionUpgrade(userId, dto.getPackageId());
+        SubscriptionValidationResult validation = subService.validateSubscriptionUpgrade(userId, dto.getPackageId());
+        if (!validation.isValid()) {
+            throw new BusinessLogicException(validation.getMessage());
+        }
         Invoice invoice = invoiceService.createInvoice(dto, userId);
         ItemData itemData = ItemData.builder()
                 .name(invoice.getNote())
@@ -123,6 +136,8 @@ public class PaymentService {
                 if (invoice != null) {
                     Long userId = invoice.getUser().getId();
                     Long packageId = invoice.getPackageId();
+                    invoice.setPaidAt(LocalDateTime.now());
+                    invoiceRepository.save(invoice);
                     try {
                         subService.validateSubscriptionUpgrade(userId, packageId);
                         subService.registerSubscription(userId, packageId);
@@ -138,6 +153,105 @@ public class PaymentService {
         }
 
         return true;
+    }
+
+
+    // Get by Id , Get All
+    // Cho user thường
+    public PageResponse<UserPaymentResponseDto> getAllByUser(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Payment> pageObj = paymentRepository.findAllByUserId(userId, pageable);
+        List<UserPaymentResponseDto> items = pageObj.stream()
+                .map(this::toUserDto)
+                .toList();
+        PageResponse.PageInfo pageInfo = new PageResponse.PageInfo(
+                pageObj.getNumber(),
+                pageObj.getSize(),
+                pageObj.getTotalPages(),
+                pageObj.getTotalElements(),
+                pageObj.hasNext(),
+                pageObj.hasPrevious()
+        );
+        return new PageResponse<>(items, pageInfo);
+    }
+
+    // Cho admin
+    public PageResponse<AdminPaymentResponseDto> getAllAdmin(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Payment> pageObj = paymentRepository.findAll(pageable);
+        List<AdminPaymentResponseDto> items = pageObj.stream()
+                .map(this::toAdminDto)
+                .toList();
+        PageResponse.PageInfo pageInfo = new PageResponse.PageInfo(
+                pageObj.getNumber(),
+                pageObj.getSize(),
+                pageObj.getTotalPages(),
+                pageObj.getTotalElements(),
+                pageObj.hasNext(),
+                pageObj.hasPrevious()
+        );
+        return new PageResponse<>(items, pageInfo);
+    }
+
+    // Lấy chi tiết cho user (check owner)
+    public UserPaymentResponseDto getByIdForUser(Long id, Long userId) {
+        return paymentRepository.findByIdAndUserId(id, userId)
+                .map(this::toUserDto)
+                .orElse(null);
+    }
+
+    // Lấy chi tiết cho admin (không check userId)
+    public AdminPaymentResponseDto getByIdAdmin(Long id) {
+        return paymentRepository.findById(id)
+                .map(this::toAdminDto)
+                .orElse(null);
+    }
+
+    public PageResponse<AdminPaymentResponseDto> getAllByUserForAdmin(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Payment> pageObj = paymentRepository.findAllByUserId(userId, pageable);
+        List<AdminPaymentResponseDto> items = pageObj.stream()
+                .map(this::toAdminDto)
+                .toList();
+        PageResponse.PageInfo pageInfo = new PageResponse.PageInfo(
+                pageObj.getNumber(),
+                pageObj.getSize(),
+                pageObj.getTotalPages(),
+                pageObj.getTotalElements(),
+                pageObj.hasNext(),
+                pageObj.hasPrevious()
+        );
+        return new PageResponse<>(items, pageInfo);
+    }
+
+
+    // Mapping
+    private UserPaymentResponseDto toUserDto(Payment p) {
+        UserPaymentResponseDto dto = new UserPaymentResponseDto();
+        dto.setId(p.getId());
+        dto.setTransactionId(p.getTransactionId());
+        dto.setProvider(p.getProvider());
+        dto.setStatus(p.getStatus().name());
+        dto.setCheckoutUrl(p.getCheckoutUrl());
+        dto.setPaidAt(p.getPaidAt());
+        dto.setResponseSignature(p.getResponseSignature());
+        dto.setBankCode(p.getBankCode());
+        dto.setInvoiceId(p.getInvoice() != null ? p.getInvoice().getId() : null);
+        return dto;
+    }
+    private AdminPaymentResponseDto toAdminDto(Payment p) {
+        AdminPaymentResponseDto dto = new AdminPaymentResponseDto();
+        dto.setId(p.getId());
+        dto.setTransactionId(p.getTransactionId());
+        dto.setProvider(p.getProvider());
+        dto.setStatus(p.getStatus().name());
+        dto.setCheckoutUrl(p.getCheckoutUrl());
+        dto.setPaidAt(p.getPaidAt());
+        dto.setResponseSignature(p.getResponseSignature());
+        dto.setBankCode(p.getBankCode());
+        dto.setInvoiceId(p.getInvoice() != null ? p.getInvoice().getId() : null);
+        dto.setUserId(p.getUser() != null ? p.getUser().getId() : null);
+        return dto;
     }
 
 }

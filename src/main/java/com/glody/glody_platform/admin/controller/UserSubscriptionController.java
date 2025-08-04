@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/user-subscriptions")
 @RequiredArgsConstructor
-@Tag(name = "User Subscription Controller", description = "Quản lý các gói đăng ký người dùng cho 1 số trường hợp đặc biệt của ADMIN")
+@Tag(name = "Admin User Subscription Controller", description = "Quản lý các gói đăng ký người dùng cho 1 số trường hợp đặc biệt của ADMIN")
 public class UserSubscriptionController {
 
     private final UserSubscriptionService userSubscriptionService;

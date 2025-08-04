@@ -1,6 +1,8 @@
 package com.glody.glody_platform.payment.repository;
 
 import com.glody.glody_platform.payment.entity.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,5 +15,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findAllByUserId(@Param("userId") Long userId);
     Optional<Payment> findByInvoiceId(Long invoiceId);
     Optional<Payment> findByTransactionId(String transactionId);
+    Page<Payment> findAllByUserId(Long userId, Pageable pageable);
+    Optional<Payment> findByIdAndUserId(Long id, Long userId);
 
 }

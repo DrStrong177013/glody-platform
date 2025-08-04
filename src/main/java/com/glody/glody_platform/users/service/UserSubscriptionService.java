@@ -1,6 +1,7 @@
 package com.glody.glody_platform.users.service;
 
 import com.glody.glody_platform.common.exception.BusinessLogicException;
+import com.glody.glody_platform.users.dto.SubscriptionValidationResult;
 import com.glody.glody_platform.users.dto.UserSubscriptionDto;
 import com.glody.glody_platform.users.dto.UserSubscriptionRequestDto;
 import com.glody.glody_platform.users.dto.UserSubscriptionResponseDto;
@@ -104,37 +105,35 @@ public class UserSubscriptionService {
      * @param requestedPackageId id gói muốn mua
      * @throws BusinessLogicException nếu vi phạm logic đăng ký gói
      */
-    public void validateSubscriptionUpgrade(Long userId, Long requestedPackageId) {
+    public SubscriptionValidationResult validateSubscriptionUpgrade(Long userId, Long requestedPackageId) {
         SubscriptionPackage requestedPackage = subscriptionPackageRepository.findById(requestedPackageId)
-                .orElseThrow(() -> new RuntimeException("Package not found"));
+                .orElse(null);
+        if (requestedPackage == null) {
+            return new SubscriptionValidationResult(false, "Package not found");
+        }
 
         // Tìm tất cả gói đang active của user (chưa expired, chưa xóa)
         List<UserSubscription> activeSubs = userSubscriptionRepository.findAllByUserIdAndIsActiveTrue(userId);
 
         for (UserSubscription sub : activeSubs) {
             SubscriptionPackage currentPackage = sub.getSubscriptionPackage();
-            // ❌ Đang dùng chính gói này và còn hiệu lực
             if (currentPackage.getId().equals(requestedPackage.getId())) {
-                System.out.println(
-                        "Bạn đã đăng ký gói này và đang còn hiệu lực đến: " + sub.getEndDate()
-                );
-                throw new BusinessLogicException(
+                return new SubscriptionValidationResult(
+                        false,
                         "Bạn đã đăng ký gói này và đang còn hiệu lực đến: " + sub.getEndDate()
                 );
             }
-            // ❌ Gói mới thấp hơn gói đang dùng
             if (requestedPackage.getPrice() < currentPackage.getPrice()) {
-                System.out.println(
-                        "Không thể đăng ký gói thấp hơn (" + requestedPackage.getName() +
-                                ") khi bạn đang dùng gói cao hơn (" + currentPackage.getName() + ")."
-                );
-                throw new IllegalStateException(
+                return new SubscriptionValidationResult(
+                        false,
                         "Không thể đăng ký gói thấp hơn (" + requestedPackage.getName() +
                                 ") khi bạn đang dùng gói cao hơn (" + currentPackage.getName() + ")."
                 );
             }
         }
+        return new SubscriptionValidationResult(true, "Đăng ký hợp lệ");
     }
+
 
     /**
      * Đăng ký gói subscription mới cho user — chỉ gọi khi validateSubscriptionUpgrade đã pass!
@@ -146,7 +145,6 @@ public class UserSubscriptionService {
         SubscriptionPackage subscriptionPackage = subscriptionPackageRepository.findById(packageId)
                 .orElseThrow(() -> new RuntimeException("Package not found"));
 
-        // Hủy/hết hạn các gói đang active trước đó
         expireActiveSubscriptions(userId);
 
         LocalDate start = LocalDate.now();
@@ -163,6 +161,7 @@ public class UserSubscriptionService {
         UserSubscription savedSub = userSubscriptionRepository.save(newSub);
         return UserSubscriptionMapper.toDto(savedSub);
     }
+
 
     /**
      * Hủy/hết hạn các subscription đang còn hiệu lực cho user.

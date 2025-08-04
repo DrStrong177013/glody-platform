@@ -7,7 +7,6 @@ import vn.payos.PayOS;
 import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
 import vn.payos.type.Webhook;
-import com.glody.glody_platform.payment.dto.CreatePaymentRequest;
 import com.glody.glody_platform.payment.dto.CreatePaymentResponse;
 
 import java.util.List;

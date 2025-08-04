@@ -15,6 +15,7 @@ public class InvoiceResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime expiredAt;
     private String        checkoutUrl;
+    private LocalDateTime paidAt;
 }
 
 
